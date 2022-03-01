@@ -19,18 +19,18 @@ public class UserDto {
     private String userName;
     @JSONField(name = "userAddress")
     private String userAddress = "无固定住址";
-    @JSONField(name = "userSchool")
-    private String userSchool = "未上学";
+    @JSONField(name = "userOrganization")
+    private String userOrganization = "无组织";
     @JSONField(name = "userFileNums")
     private String userFileNums = "0";
 
     public UserDto() {
     }
 
-    public UserDto(String userName, String userAddress, String userSchool, String userFileNums) {
+    public UserDto(String userName, String userAddress, String userOrganization, String userFileNums) {
         this.userName = userName;
         this.userAddress = userAddress;
-        this.userSchool = userSchool;
+        this.userOrganization = userOrganization;
         this.userFileNums = userFileNums;
     }
 
@@ -50,12 +50,12 @@ public class UserDto {
         this.userAddress = userAddress;
     }
 
-    public String getUserSchool() {
-        return userSchool;
+    public String getUserOrganization() {
+        return userOrganization;
     }
 
-    public void setUserSchool(String userSchool) {
-        this.userSchool = userSchool;
+    public void setUserOrganization(String userOrganization) {
+        this.userOrganization = userOrganization;
     }
 
     public String getUserFileNums() {

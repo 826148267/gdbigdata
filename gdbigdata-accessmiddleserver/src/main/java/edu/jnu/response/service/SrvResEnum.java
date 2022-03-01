@@ -16,12 +16,6 @@ public enum SrvResEnum {
     CREATE_USER_FAIL_BAD_PARAMS_FORMAT(504, "创建用户失败，传入的参数格式不合法"),
     CREATE_USER_FAIL_BAD_ENCRYPT(505, "创建用户失败，加密参数时发生错误"),
 
-    GET_USER_SCHOOL_FAIL_RANDOM_SEQUENCE_SIZE_TOO_BIG(506, "获取用户学校失败，随机访问下标集合的大小太大"),
-    GET_USER_SCHOOL_FAIL_TO_CALL_API(507, "获取用户学校失败，调用后台api时发生错误"),
-    GET_USER_SCHOOL_FAIL_TO_CREATE_SELECTION_DTO(508, "获取用户学校失败，selection阶段创建数据传输对象时产生错误"),
-    GET_USER_SCHOOL_FAIL_TO_GET_V(509, "获取用户学校失败，在获取V时发生错误"),
-    GET_USER_SCHOOL_FAIL_TO_GET_PLAIN(510, "获取用户学校失败，从V中获取明文时发生错误"),
-
     CREATE_DTO1_FAIL(100, "osu协议创建第一阶段DTO失败"),
     OSU_PARAM_VALID_FAIL(101, "osu协议系统参数未通过检验"),
     OSU_GET_V_DEC_FAIL(102, "osu协议通过R获取V时解密失败"),

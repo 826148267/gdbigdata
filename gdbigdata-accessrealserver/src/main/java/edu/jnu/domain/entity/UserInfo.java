@@ -1,4 +1,4 @@
-package edu.jnu.domain;
+package edu.jnu.domain.entity;
 
 import javax.persistence.*;
 
@@ -10,7 +10,7 @@ public class UserInfo {
     @Column(length = 2500)
     private String userName;
     @Column(length = 2500)
-    private String userSchool;
+    private String userOrganization;
     @Column(length = 2500)
     private String userAddress;
     @Column(length = 2500)
@@ -32,12 +32,12 @@ public class UserInfo {
         this.userName = userName;
     }
 
-    public String getUserSchool() {
-        return userSchool;
+    public String getUserOrganization() {
+        return userOrganization;
     }
 
-    public void setUserSchool(String userSchool) {
-        this.userSchool = userSchool;
+    public void setUserOrganization(String userOrganization) {
+        this.userOrganization = userOrganization;
     }
 
     public String getUserAddress() {

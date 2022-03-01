@@ -13,11 +13,6 @@ public class ConditionException extends RuntimeException {
 
     private int code;
 
-    public ConditionException(CtrlResEnum ctrlResEnum) {
-        super(ctrlResEnum.getErrMsg());
-        this.code = ctrlResEnum.getCode();
-    }
-
     public ConditionException(SrvResEnum srvResEnum) {
         super(srvResEnum.getErrMsg());
         this.code = srvResEnum.getCode();

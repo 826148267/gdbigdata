@@ -12,8 +12,6 @@ import edu.jnu.response.service.SrvResEnum;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
 import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -52,7 +50,7 @@ public class ApiManagerService {
         JSONObject result = this.simplePost(dto, url);
 
         if (!"200".equals(result.get("code").toString())) {
-            throw new RuntimeException(SrvResEnum.EXCEPTION.getErrMsg());
+            throw new ConditionException(SrvResEnum.EXCEPTION);
         }
     }
 
@@ -73,7 +71,7 @@ public class ApiManagerService {
                     "UTF-8"
             );
         } catch (IOException e) {
-            throw new ConditionException(SrvResEnum.CREATE_USER_FAIL_TO_CALL_API);
+            throw new ConditionException(SrvResEnum.EXCEPTION);
         }
         return JSON.parseObject(resStr);
     }

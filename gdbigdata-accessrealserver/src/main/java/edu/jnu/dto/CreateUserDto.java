@@ -22,11 +22,11 @@ public class CreateUserDto {
     @Length(min = 1, max = 2500, message = "字符串的长度应该是1~2500")
     @IsANum(message = "输入的用户住址符串必须是数字")
     private String userAddress;
-    @NotContainSpace(message = "用户学校中不可以含有是空格")
-    @NotBlank(message = "用户学校至少需要有一个非空白字符")
-    @Length(min = 1, max = 2500, message = "用户学校字符串的长度应该是1~2500")
-    @IsANum(message = "输入的用户学校符串必须是数字")
-    private String userSchool;
+    @NotContainSpace(message = "用户组织中不可以含有是空格")
+    @NotBlank(message = "用户组织至少需要有一个非空白字符")
+    @Length(min = 1, max = 2500, message = "用户组织字符串的长度应该是1~2500")
+    @IsANum(message = "输入的用户组织符串必须是数字")
+    private String userOrganization;
     @NotContainSpace(message = "用户文件数量中不可以含有是空格")
     @NotBlank(message = "用户文件数量至少需要有一个非空白字符")
     @Length(min = 1, max = 2500, message = "用户文件数量字符串的长度应该是1~2500")
@@ -49,12 +49,12 @@ public class CreateUserDto {
         this.userAddress = userAddress;
     }
 
-    public String getUserSchool() {
-        return userSchool;
+    public String getUserOrganization() {
+        return userOrganization;
     }
 
-    public void setUserSchool(String userSchool) {
-        this.userSchool = userSchool;
+    public void setUserOrganization(String userOrganization) {
+        this.userOrganization = userOrganization;
     }
 
     public String getUserFileNums() {

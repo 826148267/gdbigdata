@@ -3,7 +3,7 @@ package edu.jnu.service;
 import edu.jnu.config.OsuProtocolParams;
 import edu.jnu.dao.UserInfoDao;
 import edu.jnu.domain.CipherText;
-import edu.jnu.domain.UserInfo;
+import edu.jnu.domain.entity.UserInfo;
 import edu.jnu.enums.ResponseEnum;
 import edu.jnu.exception.ConditionException;
 import edu.jnu.utils.Action;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Optional;
 
 /**

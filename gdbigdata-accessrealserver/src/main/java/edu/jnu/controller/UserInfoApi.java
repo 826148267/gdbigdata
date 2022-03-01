@@ -1,7 +1,7 @@
 package edu.jnu.controller;
 
 import edu.jnu.domain.CipherText;
-import edu.jnu.domain.UserInfo;
+import edu.jnu.domain.entity.UserInfo;
 import edu.jnu.dto.CreateUserDto;
 import edu.jnu.dto.OsuFirstPhaseDto;
 import edu.jnu.dto.OsuSecondPhaseDto;
@@ -54,7 +54,7 @@ public class UserInfoApi {
     @RequestMapping(value = "/users", method = RequestMethod.POST)
     public JsonResponse<?> createNewUserInformation(@Validated @RequestBody CreateUserDto createUserDto) {
         UserInfo userInfo = new UserInfo();
-        userInfo.setUserSchool(createUserDto.getUserSchool());
+        userInfo.setUserOrganization(createUserDto.getUserOrganization());
         userInfo.setUserName(createUserDto.getUserName());
         userInfo.setUserAddress(createUserDto.getUserAddress());
         userInfo.setUserFileNums(createUserDto.getUserFileNums());

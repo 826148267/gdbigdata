@@ -35,7 +35,7 @@ public class UserApi {
 
         User user = new User(userDto.getUserName(),
                 userDto.getUserAddress(),
-                userDto.getUserSchool(),
+                userDto.getUserOrganization(),
                 userDto.getUserFileNums()
         );
 
@@ -75,7 +75,7 @@ public class UserApi {
         User user = new User(
                 userDto.getUserName(),
                 userDto.getUserAddress(),
-                userDto.getUserSchool(),
+                userDto.getUserOrganization(),
                 userDto.getUserFileNums()
         );
         User updatedUser = userService.updateUserInfo(user);
@@ -96,12 +96,12 @@ public class UserApi {
         }
 
         String result;
-        if ("/user-school".equals(patchUserInfoDto.getPath())
+        if ("/user-organization".equals(patchUserInfoDto.getPath())
                 && "update".equals(patchUserInfoDto.getOp())) {
             User user = new User();
             user.setUserName(userName);
-            user.setUserSchool(patchUserInfoDto.getValue());
-            result = userService.updateUserSchool(user);
+            user.setUserOrganization(patchUserInfoDto.getValue());
+            result = userService.updateUserOrganization(user);
         } else if ("/user-address".equals(patchUserInfoDto.getPath())
                 && "update".equals(patchUserInfoDto.getOp())) {
             User user = new User();
@@ -114,9 +114,9 @@ public class UserApi {
             user.setUserName(userName);
             user.setUserFileNums(patchUserInfoDto.getValue());
             result = userService.updateUserFileNums(user);
-        } else if ("/user-school".equals(patchUserInfoDto.getPath())
+        } else if ("/user-organization".equals(patchUserInfoDto.getPath())
                 && "get".equals(patchUserInfoDto.getOp())) {
-            result = userService.getUserSchool(userName);
+            result = userService.getUserOrganization(userName);
         } else if ("/user-address".equals(patchUserInfoDto.getPath())
                 && "get".equals(patchUserInfoDto.getOp())) {
             result = userService.getUserAddress(userName);

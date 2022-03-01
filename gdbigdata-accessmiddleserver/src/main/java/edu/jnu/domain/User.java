@@ -8,24 +8,24 @@ public class User {
     private String userId;
     private String userName;
     private String userAddress;
-    private String userSchool;
+    private String userOrganization;
     private String userFileNums;
 
     public User() {
     }
 
-    public User(String userName, String userAddress, String userSchool, String userFileNums) {
+    public User(String userName, String userAddress, String userOrganization, String userFileNums) {
         this.userName = userName;
         this.userAddress = userAddress;
-        this.userSchool = userSchool;
+        this.userOrganization = userOrganization;
         this.userFileNums = userFileNums;
     }
 
-    public User(String userId, String userName, String userAddress, String userSchool, String userFileNums) {
+    public User(String userId, String userName, String userAddress, String userOrganization, String userFileNums) {
         this.userId = userId;
         this.userName = userName;
         this.userAddress = userAddress;
-        this.userSchool = userSchool;
+        this.userOrganization = userOrganization;
         this.userFileNums = userFileNums;
     }
 
@@ -53,12 +53,12 @@ public class User {
         this.userAddress = userAddress;
     }
 
-    public String getUserSchool() {
-        return userSchool;
+    public String getUserOrganization() {
+        return userOrganization;
     }
 
-    public void setUserSchool(String userSchool) {
-        this.userSchool = userSchool;
+    public void setUserOrganization(String userOrganization) {
+        this.userOrganization = userOrganization;
     }
 
     public String getUserFileNums() {

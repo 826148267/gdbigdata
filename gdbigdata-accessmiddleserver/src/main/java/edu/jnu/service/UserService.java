@@ -8,7 +8,6 @@ import edu.jnu.dto.UserDto;
 import edu.jnu.exception.ConditionException;
 import edu.jnu.response.service.SrvResEnum;
 import edu.jnu.utils.Action;
-import edu.jnu.utils.JsonResponse;
 import edu.jnu.utils.Tools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,7 +52,7 @@ public class UserService {
         UserDto userDto = new UserDto(
                 userEnc.getUserName(),
                 userEnc.getUserAddress(),
-                userEnc.getUserSchool(),
+                userEnc.getUserOrganization(),
                 userEnc.getUserFileNums()
         );
 
@@ -76,7 +75,7 @@ public class UserService {
     private User encryptAllFields(User user) {
         User userEnc = new User(Tools.encode(user.getUserName()),
                 Tools.encode(user.getUserAddress()),
-                Tools.encode(user.getUserSchool()),
+                Tools.encode(user.getUserOrganization()),
                 Tools.encode(user.getUserFileNums()));
         // 解析出接受到的实例
         // 对userDto实例中的每个字段都加密
@@ -93,8 +92,8 @@ public class UserService {
 
             CipherText cUserSchool = Action.Enc2SPlus2(OsuProtocolParams.PK,
                     OsuProtocolParams.s,
-                    userEnc.getUserSchool());
-            userEnc.setUserSchool(cUserSchool.getCp().toString());
+                    userEnc.getUserOrganization());
+            userEnc.setUserOrganization(cUserSchool.getCp().toString());
 
             CipherText cUserFileNums = Action.Enc2SPlus2(OsuProtocolParams.PK,
                     OsuProtocolParams.s,
@@ -120,19 +119,19 @@ public class UserService {
         return osuService.getOneFieldOfTable(osuParam);
     }
 
-    public String getUserSchool(String userName) {
+    public String getUserOrganization(String userName) {
         int id = this.getIdByUserName(userName);
         String recordNum = this.getNowRecordNum();
-        OsuParam osuParam = new OsuParam(id, "userSchool", recordNum, getRUrl, osuUpdateUrl);
+        OsuParam osuParam = new OsuParam(id, "userOrganization", recordNum, getRUrl, osuUpdateUrl);
         return osuService.getOneFieldOfTable(osuParam);
     }
 
     public User getUser(String userName) {
         int id = this.getIdByUserName(userName);
-        String userSchool = getUserSchool(userName);
+        String userOrganization = getUserOrganization(userName);
         String userAddress = getUserAddress(userName);
         String userFileNums = getUserFileNums(userName);
-        return new User(String.valueOf(id), userName, userAddress, userSchool, userFileNums);
+        return new User(String.valueOf(id), userName, userAddress, userOrganization, userFileNums);
     }
 
     public String getNowRecordNum() {
@@ -156,11 +155,11 @@ public class UserService {
         return Integer.parseInt(Objects.requireNonNull(redisTemplate.opsForValue().get(userName)).toString());
     }
 
-    public String updateUserSchool(User user) {
+    public String updateUserOrganization(User user) {
         int id = this.getIdByUserName(user.getUserName());
         String recordNum = this.getNowRecordNum();
-        OsuParam osuParam = new OsuParam(id, "userSchool", recordNum, getRUrl, osuUpdateUrl);
-        return osuService.setOneFieldOfTable(osuParam, user.getUserSchool());
+        OsuParam osuParam = new OsuParam(id, "userOrganization", recordNum, getRUrl, osuUpdateUrl);
+        return osuService.setOneFieldOfTable(osuParam, user.getUserOrganization());
     }
 
     public String updateUserAddress(User user) {
@@ -182,7 +181,7 @@ public class UserService {
                 String.valueOf(this.getIdByUserName(user.getUserName())),
                 user.getUserName(),
                 this.updateUserAddress(user),
-                this.updateUserSchool(user),
+                this.updateUserOrganization(user),
                 this.updateUserFileNums(user)
         );
     }
