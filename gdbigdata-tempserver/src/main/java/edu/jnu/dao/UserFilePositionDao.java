@@ -13,6 +13,4 @@ import java.util.List;
  */
 public interface UserFilePositionDao extends JpaRepository<UserFilePosition, Integer> {
 
-    List<UserFilePosition> findAllByUserIdIs(Integer userId);
-
 }

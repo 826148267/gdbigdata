@@ -15,15 +15,14 @@ public class UserFilePosition {
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "1") //自增
     private int id;
     @Column
-    private int userId;
-    @Column
     private String filePath;
+    @Column
+    private int duplicateNum;
 
     public UserFilePosition() {
     }
 
-    public UserFilePosition(int userId, String filePath) {
-        this.userId = userId;
+    public UserFilePosition(String filePath) {
         this.filePath = filePath;
     }
 
@@ -35,19 +34,19 @@ public class UserFilePosition {
         this.id = id;
     }
 
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
     public String getFilePath() {
         return filePath;
     }
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;
+    }
+
+    public int getDuplicateNum() {
+        return duplicateNum;
+    }
+
+    public void setDuplicateNum(int duplicateNum) {
+        this.duplicateNum = duplicateNum;
     }
 }
