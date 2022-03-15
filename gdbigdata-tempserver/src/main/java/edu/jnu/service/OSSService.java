@@ -18,20 +18,26 @@ import java.io.InputStream;
 @Service
 public class OSSService {
 
-    @Autowired
-    private OSS oss;
-
-    @Value("${aliyun.oss.bucket.name}")
-    private String bucketName;
+    /**
+     * 获得OSS对象存储的客户端对象.
+     * @param endpoint
+     * @param accessKeyId
+     * @param accessKeySecret
+     * @return
+     */
+    public OSS createOss(String endpoint, String accessKeyId, String accessKeySecret) {
+        return OSSFactory.create(endpoint, accessKeyId, accessKeySecret);
+    }
 
     /**
-     * 上传文件到OSS服务器.
-     * 将用户提供的对象上传到阿里云的OSS服务器.
-     * @param objectName    填写Object完整路径，例如exampledir/exampleobject.txt。Object完整路径中不能包含Bucket名称
-     * @param inputStream   输入待传文件的输入流
+     * 上传文件到OSS对象存储.
+     * 将数据对象上传到OSS对象存储中.
+     * @param oss
+     * @param objectName
+     * @param bucketName
+     * @param inputStream
      */
-    public void uploadObj2OSS(String objectName, InputStream inputStream) {
-        String bucketName = this.bucketName;
+    public void uploadObj2OSS(OSS oss, String objectName, String bucketName, InputStream inputStream) {
         // 创建PutObjectRequest对象。
         PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectName, inputStream);
         // 如果需要上传时设置存储类型和访问权限，请参考以下示例代码。
@@ -44,13 +50,14 @@ public class OSSService {
     }
 
     /**
-     * 获取用户文件内容.
-     * 根据用户给的文件名获取存储在bucket bucketName中的文件.
-     * @param objName   文件名
-     * @return  返回文件内容的数据输入流
+     * 下载存储对象.
+     * 从OSS对象存储中下载已有的数据对象.
+     * @param oss
+     * @param objName
+     * @param bucketName
+     * @return
      */
-    public InputStream downloadObj(String objName) {
-        String bucketName = this.bucketName;
+    public InputStream downloadObj(OSS oss, String objName, String bucketName) {
         OSSObject result = oss.getObject(new GetObjectRequest(bucketName, objName));
         return result.getObjectContent();
     }
