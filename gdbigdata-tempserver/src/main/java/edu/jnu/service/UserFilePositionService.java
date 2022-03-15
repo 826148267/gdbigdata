@@ -6,6 +6,8 @@ import edu.jnu.dto.FileInfosDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -53,8 +55,10 @@ public class UserFilePositionService {
      * 获取用户存放在OSS中的文件信息.
      * @return  该用户所有文件的文件路径集合
      */
-    public List<FileInfosDto> listUserFilePosition() {
-        List<UserFilePosition> ufps = userFilePositionDao.findAll();
+    public List<FileInfosDto> listUserFilePosition(Integer pageOffset, Integer size) {
+        PageRequest pageRequest = PageRequest.of(pageOffset, size);
+        Page<UserFilePosition> ufps = userFilePositionDao.findAll(pageRequest);
+
         List<FileInfosDto> res = ufps.stream().map(ufp -> {
             FileInfosDto fid = new FileInfosDto();
             fid.setFilePath(ufp.getFilePath().split("/", 2)[1]);
