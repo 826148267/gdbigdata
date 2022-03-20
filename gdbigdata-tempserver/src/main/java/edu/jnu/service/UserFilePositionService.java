@@ -69,4 +69,22 @@ public class UserFilePositionService {
         }).toList();
         return res;
     }
+
+    /**
+     * 统计表中记录数.
+     * @return 返回总记录数
+     */
+    public Integer getTotals() {
+        return Math.toIntExact(userFilePositionDao.count());
+    }
+
+    public void deleteFilePosition(String fileName) {
+        UserFilePosition ufp = userFilePositionDao.findByFilePathContains(fileName);
+        if (ufp.getDuplicateNum() == 0) {
+            userFilePositionDao.deleteById(ufp.getId());
+        } else {
+            ufp.setDuplicateNum(ufp.getDuplicateNum()-1);
+            userFilePositionDao.save(ufp);
+        }
+    }
 }

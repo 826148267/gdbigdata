@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * fastjson通用配置.
@@ -36,7 +37,7 @@ public class JsonHttpMessageConverterConfig {
                 SerializerFeature.MapSortField,
                 SerializerFeature.DisableCircularReferenceDetect
         );
-        fastJsonConfig.setCharset(Charset.forName("UTF-8"));
+        fastJsonConfig.setCharset(StandardCharsets.UTF_8);
         fastJsonHttpMessageConverter.setFastJsonConfig(fastJsonConfig);
         return new HttpMessageConverters(fastJsonHttpMessageConverter);
     }

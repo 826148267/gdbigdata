@@ -3,11 +3,7 @@ package edu.jnu.service;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.model.*;
 import edu.jnu.utils.Tools;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.io.File;
 import java.io.InputStream;
 
 /**
