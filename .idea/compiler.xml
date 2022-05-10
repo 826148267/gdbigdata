@@ -6,10 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="gdbigdata-audit-csp-server" />
         <module name="gdbigdata-accessrealserver" />
         <module name="gdbigdata-tempserver" />
         <module name="gdbigdata-accessmiddleserver" />
         <module name="gdbigdata-access-sqlshow-server" />
+        <module name="gdbigdata-audit-tpa-server" />
       </profile>
     </annotationProcessing>
   </component>
@@ -18,6 +20,8 @@
       <module name="gdbigdata-access-sqlshow-server" options="-parameters" />
       <module name="gdbigdata-accessmiddleserver" options="-parameters" />
       <module name="gdbigdata-accessrealserver" options="-parameters" />
+      <module name="gdbigdata-audit-csp-server" options="-parameters" />
+      <module name="gdbigdata-audit-tpa-server" options="-parameters" />
       <module name="gdbigdata-tempserver" options="-parameters" />
     </option>
   </component>

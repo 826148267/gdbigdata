@@ -107,6 +107,7 @@ public class UserService {
 
     public String getUserFileNums(String userName) {
         int id = this.getIdByUserName(userName);
+
         String recordNum = this.getNowRecordNum();
         OsuParam osuParam = new OsuParam(id, "userFileNums", recordNum, getRUrl, osuUpdateUrl);
         return osuService.getOneFieldOfTable(osuParam);
@@ -171,6 +172,7 @@ public class UserService {
 
     public String updateUserFileNums(User user) {
         int id = this.getIdByUserName(user.getUserName());
+
         String recordNum = this.getNowRecordNum();
         OsuParam osuParam = new OsuParam(id, "userFileNums", recordNum, getRUrl, osuUpdateUrl);
         return osuService.setOneFieldOfTable(osuParam, user.getUserFileNums());

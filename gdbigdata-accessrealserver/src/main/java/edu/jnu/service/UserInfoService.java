@@ -50,7 +50,7 @@ public class UserInfoService {
                 } catch (NoSuchFieldException e) {
                     throw new ConditionException(ResponseEnum.SELECTION_PHASE_FAIL_CANNOT_GET_FIELD);
                 }
-                String targetColumnValue = null;
+                String targetColumnValue;
                 try {
                     targetColumnValue = (String) field.get(userInfo);
                 } catch (IllegalAccessException e) {

@@ -13,8 +13,6 @@ import edu.jnu.utils.Tools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -102,7 +100,6 @@ public class UserFileController {
     @GetMapping(value = "/fileInfos")
     public ResponseEntity<List<FileInfosDto>> getUserFilePaths(@RequestParam(value = "page", defaultValue = "0", required = false) Integer pageOffset,
                                                                @RequestParam(value = "size", defaultValue = "8", required = false) Integer size) {
-
         List<FileInfosDto> page = userFilePositionService.listUserFilePosition(pageOffset, size);
         // 从数据库中获取用户id所拥有的所有文件的相对路径
         return ResponseEntity.ok(page);

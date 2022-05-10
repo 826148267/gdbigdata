@@ -11,6 +11,9 @@
     <file url="file://$PROJECT_DIR$/gdbigdata-accessrealserver/src/main/java/edu/jnu/domain/PublicKey.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/gdbigdata-accessrealserver/src/main/java/edu/jnu/utils/Action.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/gdbigdata-accessrealserver/src/main/java/edu/jnu/utils/Tools.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/gdbigdata-audit-csp-server/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/gdbigdata-audit-csp-server/src/main/resources/application.properties" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/gdbigdata-audit-tpa-server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/gdbigdata-tempserver/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/gdbigdata-tempserver/src/main/resources/application.properties" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />

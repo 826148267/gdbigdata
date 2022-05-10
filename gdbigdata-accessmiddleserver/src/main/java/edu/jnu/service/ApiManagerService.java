@@ -12,6 +12,8 @@ import edu.jnu.response.service.SrvResEnum;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,8 @@ import java.util.ArrayList;
  */
 @Service
 public class ApiManagerService {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApiManagerService.class);
 
     @Value("${real.server.url.add.userinfo}")
     private String addUserUrl;
@@ -62,7 +66,7 @@ public class ApiManagerService {
 
     private JSONObject simplePost(Object obj, String url) {
         String userDtoStr = JSONObject.toJSONString(obj, true);
-        String resStr;
+        String resStr = null;
         try {
             resStr = EntityUtils.toString(
                     Request.Post(url)
@@ -71,7 +75,8 @@ public class ApiManagerService {
                     "UTF-8"
             );
         } catch (IOException e) {
-            throw new ConditionException(SrvResEnum.EXCEPTION);
+            // TODO 此处异常处理有问题，如果发生网络抖动整个程序都会宕机，待修改
+            LOGGER.info("middleserver调用realserver接口时，产生问题");
         }
         return JSON.parseObject(resStr);
     }
