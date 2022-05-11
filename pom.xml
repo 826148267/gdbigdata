@@ -63,6 +63,8 @@
         <module>gdbigdata-accessrealserver</module>
         <module>gdbigdata-tempserver</module>
         <module>gdbigdata-access-sqlshow-server</module>
+        <module>gdbigdata-audit-tpa-server</module>
+        <module>gdbigdata-audit-csp-server</module>
     </modules>
 
     <properties>
