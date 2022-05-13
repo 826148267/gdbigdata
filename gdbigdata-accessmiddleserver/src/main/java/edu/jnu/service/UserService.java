@@ -11,6 +11,8 @@ import edu.jnu.utils.Action;
 import edu.jnu.utils.Tools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -105,14 +107,15 @@ public class UserService {
         return userEnc;
     }
 
+    @Cacheable("userFileNumsByUserName")
     public String getUserFileNums(String userName) {
         int id = this.getIdByUserName(userName);
-
         String recordNum = this.getNowRecordNum();
         OsuParam osuParam = new OsuParam(id, "userFileNums", recordNum, getRUrl, osuUpdateUrl);
         return osuService.getOneFieldOfTable(osuParam);
     }
 
+    @Cacheable("userAddressByUserName")
     public String getUserAddress(String userName) {
         int id = this.getIdByUserName(userName);
         String recordNum = this.getNowRecordNum();
@@ -120,6 +123,7 @@ public class UserService {
         return osuService.getOneFieldOfTable(osuParam);
     }
 
+    @Cacheable("userOrganizationByUserName")
     public String getUserOrganization(String userName) {
         int id = this.getIdByUserName(userName);
         String recordNum = this.getNowRecordNum();
@@ -147,6 +151,7 @@ public class UserService {
         redisTemplate.opsForValue().increment("userInfoRecordNum");
     }
 
+
     public void saveUserNameAndId(String userName, String nowRecordNum) {
         redisTemplate.opsForValue().set(userName, nowRecordNum);
         redisTemplate.persist(userName);
@@ -156,6 +161,7 @@ public class UserService {
         return Integer.parseInt(Objects.requireNonNull(redisTemplate.opsForValue().get(userName)).toString());
     }
 
+    @CachePut(value = "userOrganizationByUserName", key = "#user.userName")
     public String updateUserOrganization(User user) {
         int id = this.getIdByUserName(user.getUserName());
         String recordNum = this.getNowRecordNum();
@@ -163,6 +169,7 @@ public class UserService {
         return osuService.setOneFieldOfTable(osuParam, user.getUserOrganization());
     }
 
+    @CachePut(value = "userAddressByUserName", key = "#user.userName")
     public String updateUserAddress(User user) {
         int id = this.getIdByUserName(user.getUserName());
         String recordNum = this.getNowRecordNum();
@@ -170,9 +177,9 @@ public class UserService {
         return osuService.setOneFieldOfTable(osuParam, user.getUserAddress());
     }
 
+    @CachePut(value = "userFileNumsByUserName", key = "#user.userName")
     public String updateUserFileNums(User user) {
         int id = this.getIdByUserName(user.getUserName());
-
         String recordNum = this.getNowRecordNum();
         OsuParam osuParam = new OsuParam(id, "userFileNums", recordNum, getRUrl, osuUpdateUrl);
         return osuService.setOneFieldOfTable(osuParam, user.getUserFileNums());

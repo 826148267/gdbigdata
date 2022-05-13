@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/gdbidata-erueka-17000/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/gdbigdata-access-sqlshow-server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/gdbigdata-accessmiddleserver/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/gdbigdata-accessmiddleserver/src/main/java/edu/jnu/domain/CipherText.java" charset="UTF-8" />
@@ -14,6 +15,9 @@
     <file url="file://$PROJECT_DIR$/gdbigdata-audit-csp-server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/gdbigdata-audit-csp-server/src/main/resources/application.properties" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/gdbigdata-audit-tpa-server/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/gdbigdata-eureka-17000/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/gdbigdata-eureka-17200/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/gdbigdata-eureka-17400/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/gdbigdata-tempserver/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/gdbigdata-tempserver/src/main/resources/application.properties" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
