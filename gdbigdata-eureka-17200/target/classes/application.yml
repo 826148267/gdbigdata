@@ -1,0 +1,8 @@
+server:
+  port: 17200
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    service-url:
+      defaultZone: http://localhost:17000/eureka/,http://localhost:17400/eureka/
