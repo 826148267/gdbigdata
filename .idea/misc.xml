@@ -11,6 +11,7 @@
       <set>
         <option value="$PROJECT_DIR$/gdbigdata-eureka-17200/pom.xml" />
         <option value="$PROJECT_DIR$/gdbigdata-eureka-17400/pom.xml" />
+        <option value="$PROJECT_DIR$/gdbigdata-zuul-17001/pom.xml" />
       </set>
     </option>
   </component>
