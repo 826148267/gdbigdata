@@ -114,8 +114,6 @@
         <module>gdbigdata-audit-tpa-server</module>
         <module>gdbigdata-audit-csp-server</module>
         <module>gdbigdata-eureka-17000</module>
-        <module>gdbigdata-eureka-17200</module>
-        <module>gdbigdata-eureka-17400</module>
     </modules>
 
     <build>

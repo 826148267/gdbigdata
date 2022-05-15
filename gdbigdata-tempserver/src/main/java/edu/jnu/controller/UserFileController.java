@@ -2,28 +2,22 @@ package edu.jnu.controller;
 
 import com.aliyun.oss.OSS;
 import edu.jnu.domain.UserFilePosition;
-import edu.jnu.dto.DownloadFileDto;
 import edu.jnu.dto.FileInfosDto;
 import edu.jnu.dto.UploadFileDto;
 import edu.jnu.enums.ResponseEnum;
 import edu.jnu.exception.ConditionException;
 import edu.jnu.service.OSSService;
 import edu.jnu.service.UserFilePositionService;
-import edu.jnu.utils.Tools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -69,27 +63,6 @@ public class UserFileController {
         userFilePositionService.putFilePosition(userFilePosition);
         LOGGER.info("文件:"+multipartFile.getOriginalFilename()+"已存在于服务器中");
         return ResponseEntity.ok("文件已经上传成功");
-    }
-
-    /**
-     * 下载文件.
-     * 根据文件名来下载数据
-     * @param dto
-     * @return
-     */
-    @GetMapping(value = "/files/{fileName}")
-    public ResponseEntity<?> downloadFile(@RequestBody DownloadFileDto dto) {
-        OSS oss = ossService.createOss(dto.getEndpoint(), dto.getAccessKeyId(), dto.getAccessKeySecret());
-        InputStream inputStream = ossService.downloadObj(oss, "dupless/"+dto.getObjectName(), dto.getBucketName());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add ( "Content-Disposition",String.format("attachment;filename=\"%s\"",dto.getObjectName()));
-        headers.add ( "Cache-Control","no-cache,no-store,must-revalidate" );
-        headers.add ( "Pragma","no-cache" );
-        headers.add ( "Expires","0" );
-        return ResponseEntity.ok()
-                .headers(headers)
-                .contentType(MediaType.parseMediaType(Tools.getContentType(dto.getObjectName())))
-                .<Object>body(inputStream);
     }
 
     /**

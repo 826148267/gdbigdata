@@ -12,13 +12,13 @@
         <module name="gdbigdata-audit-tpa-server" />
         <module name="gdbigdata-audit-csp-server" />
         <module name="gdbigdata-accessrealserver" />
-        <module name="gdbigdata-eureka-17200" />
         <module name="gdbigdata-access-sqlshow-server" />
-        <module name="gdbigdata-eureka-17400" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="gdbidata-erueka-17000" target="17" />
+      <module name="gdbigdata-eureka-17200" target="17" />
+      <module name="gdbigdata-eureka-17400" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

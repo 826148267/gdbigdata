@@ -1,8 +1,11 @@
+spring:
+  application:
+    name: eureka-ha
+  profiles:
+    active: gzf
+
 server:
   port: 17000
-eureka:
-  instance:
-    hostname: localhost
-  client:
-    service-url:
-      defaultZone: http://localhost:17200/eureka/,http://localhost:17400/eureka/
+logging:
+  file:
+    name: /gdbigdata/eureka17000/gdbd-eureka17000-log.txt
