@@ -3,6 +3,15 @@ spring:
     name: gateway
   cloud:
     gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins: "*"
+            allow-credentials: true
+            allowed-headers: "*"
+            allowed-methods: "*"
+            expose-headers: "*"
+            max-age: 1000
       discovery:
         locator:
           enabled: true # 根据服务名产生默认路由规则，生产时不建议开启，应该以为白名单的形式定义路由规则
