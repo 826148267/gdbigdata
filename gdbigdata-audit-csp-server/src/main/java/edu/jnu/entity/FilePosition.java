@@ -16,15 +16,21 @@ public class FilePosition {
     private String dataFilePath;
     @Column
     private String tagFilePath;
+    @Column
+    private String fileName;
+    @Column
+    private Integer blockNum;
 
-    public FilePosition(String fileStoragePath, String originalFilename) {
+    public FilePosition(String fileStoragePath, String originalFilename,Integer blockNum) {
         this.dataFilePath = "audit/data/"+fileStoragePath+"/"+originalFilename;
         String[] tmps = originalFilename.split("-");
         String tagFileName = "tag";
         for (int i = 1; i < tmps.length; i++) {
-            tagFileName = "-"+tmps[i];
+            tagFileName = tagFileName+"-"+tmps[i];
         }
         this.tagFilePath = "audit/tag/"+fileStoragePath+"/"+tagFileName;
+        this.fileName = originalFilename;
+        this.blockNum = blockNum;
     }
 
     public FilePosition() {
@@ -53,5 +59,21 @@ public class FilePosition {
 
     public void setTagFilePath(String tagFilePath) {
         this.tagFilePath = tagFilePath;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public Integer getBlockNum() {
+        return blockNum;
+    }
+
+    public void setBlockNum(Integer blockNum) {
+        this.blockNum = blockNum;
     }
 }

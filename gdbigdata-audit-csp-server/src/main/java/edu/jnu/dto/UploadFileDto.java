@@ -19,6 +19,8 @@ public class UploadFileDto {
     private String fileStoragePath;
     @JSONField(name = "file")
     private ArrayList<MultipartFile> file;
+    @JSONField(name = "blockNum")
+    private Integer blockNum;
 
     public ArrayList<MultipartFile> getFile() {
         return file;
@@ -52,4 +54,11 @@ public class UploadFileDto {
         this.fileStoragePath = fileStoragePath;
     }
 
+    public Integer getBlockNum() {
+        return blockNum;
+    }
+
+    public void setBlockNum(Integer blockNum) {
+        this.blockNum = blockNum;
+    }
 }

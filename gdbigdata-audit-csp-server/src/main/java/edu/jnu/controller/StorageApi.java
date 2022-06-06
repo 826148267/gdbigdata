@@ -1,6 +1,6 @@
 package edu.jnu.controller;
 
-import com.aliyun.oss.OSS;
+import edu.jnu.dto.GetFileListDto;
 import edu.jnu.dto.UploadFileDto;
 import edu.jnu.entity.FilePosition;
 import edu.jnu.service.FilePositionService;
@@ -10,16 +10,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -37,6 +34,8 @@ public class StorageApi {
 
     @Autowired
     private FilePositionService filePositionService;
+
+
 
     /**
      * 上传文件.
@@ -60,10 +59,10 @@ public class StorageApi {
                 return false;
             }
             // 能到这个位置说明已经成功执行oss文件上传，接下来将文件位置记录到数据库中
-            boolean flag = false;
+            boolean flag = true;
             if ("data".equals(preFileName)) {
-                flag = filePositionService.recordPosition(uploadFileDto.getFileStoragePath(), file.getOriginalFilename());
-            }
+                flag = filePositionService.recordPosition(uploadFileDto.getFileStoragePath(), file.getOriginalFilename(), uploadFileDto.getBlockNum());
+            } else flag = true;
             if (flag) {
                 LOGGER.info("文件"+file.getOriginalFilename()+"位置已经成功记录到数据库中");
                 return true;
@@ -79,5 +78,16 @@ public class StorageApi {
             LOGGER.info("OSS上传服务出现异常，上传文件时并没有全部上传成功");
             return ResponseEntity.internalServerError().body("服务器内部错误");
         }
+    }
+
+    @GetMapping(value = "files")
+    public ResponseEntity<List<GetFileListDto>> getFileInfoList() {
+        List<FilePosition> fps = filePositionService.getAllFilePosition();
+        List<GetFileListDto> results = new ArrayList<>();
+        for (int i = 0; i < fps.size(); i++) {
+            GetFileListDto gfld = new GetFileListDto(fps.get(i));
+            results.add(gfld);
+        }
+        return ResponseEntity.ok(results);
     }
 }

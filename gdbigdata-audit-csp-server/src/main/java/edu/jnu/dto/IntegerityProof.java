@@ -11,42 +11,42 @@ import java.math.BigInteger;
  */
 public class IntegerityProof {
     @JSONField(name = "alpha")
-    private BigInteger alpha;
+    private String alpha;
     @JSONField(name = "gamma")
-    private BigInteger gamma;
+    private String gamma;
     @JSONField(name = "R")
-    private BigInteger R;
+    private String R;
 
     public IntegerityProof() {
     }
 
-    public IntegerityProof(BigInteger alpha, BigInteger gamma, BigInteger R) {
+    public IntegerityProof(String alpha, String gamma, String R) {
         this.alpha = alpha;
         this.gamma = gamma;
         this.R = R;
     }
 
-    public BigInteger getAlpha() {
+    public String getAlpha() {
         return alpha;
     }
 
-    public void setAlpha(BigInteger alpha) {
+    public void setAlpha(String alpha) {
         this.alpha = alpha;
     }
 
-    public BigInteger getGamma() {
+    public String getGamma() {
         return gamma;
     }
 
-    public void setGamma(BigInteger gamma) {
+    public void setGamma(String gamma) {
         this.gamma = gamma;
     }
 
-    public BigInteger getR() {
+    public String getR() {
         return R;
     }
 
-    public void setR(BigInteger r) {
+    public void setR(String r) {
         R = r;
     }
 }

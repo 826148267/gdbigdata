@@ -45,7 +45,7 @@ public class ProofApi {
     public ResponseEntity<IntegerityProof> proofIntegrity(ProofIntegrityDto proofIntegrityDto) {
         // 通过文件路径获取文件
         String dataFullPath = "audit/data/"+proofIntegrityDto.getFilePath();    //  获取文件全路径
-        String tagFullPath = "audit/tag/"+proofIntegrityDto.getFilePath();    //  获取文件全路径
+        String tagFullPath = "audit/tag/"+proofIntegrityDto.getTagPath();    //  获取文件全路径
         String mStr = null;
         String sStr = null;
         try {
@@ -72,6 +72,6 @@ public class ProofApi {
         LOGGER.info("alpha:"+String.valueOf(alpha));
         LOGGER.info("gamma:"+String.valueOf(gamma));
         LOGGER.info("R:"+String.valueOf(R));
-        return ResponseEntity.ok(new IntegerityProof(alpha, gamma, R));
+        return ResponseEntity.ok(new IntegerityProof(String.valueOf(alpha), String.valueOf(gamma), String.valueOf(R)));
     }
 }

@@ -17,21 +17,25 @@ public class SepdpProofService {
     }
 
     public ArrayList<BigInteger> getSList(String sStr, ArrayList<Integer> iList) {
-        return getBigIntListInString(sStr, iList);
+        ArrayList<BigInteger> results = getBigIntListInString(sStr, iList);
+        String[] tmps = sStr.split(",");
+        results.add(new BigInteger(tmps[tmps.length-1]));
+        return results;
     }
 
     /**
      * 从"str1,str2,str3"类型的字符串中分割出大整数类型的数组
+     * 然后根据下标数组选出新数组
      * @param originStr 源字符串
      * @param iList 下标数组
-     * @return  返回大整数数组
+     * @return  返回新数组
      */
     private ArrayList<BigInteger> getBigIntListInString(String originStr, ArrayList<Integer> iList) {
         // 以.分割字符串，然后将所以字符串都转化为大整数类型
         String[] tmps = originStr.split(",");
         ArrayList<BigInteger> results = new ArrayList<>();
         for (int i = 0; i < iList.size(); i++) {
-            results.set(i, new BigInteger(tmps[iList.get(i)]));
+            results.add(i, new BigInteger(tmps[iList.get(i)]));
         }
         return results;
     }

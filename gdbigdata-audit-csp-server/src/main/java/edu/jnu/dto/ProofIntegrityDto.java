@@ -15,6 +15,8 @@ public class ProofIntegrityDto {
     private String bucketName;
     @JSONField(name = "filePath")
     private String filePath;
+    @JSONField(name = "tagPath")
+    private String tagPath;
     @JSONField(name = "iList")
     private ArrayList<Integer> iList;
     @JSONField(name = "vList")
@@ -60,5 +62,13 @@ public class ProofIntegrityDto {
 
     public void setBucketName(String bucketName) {
         this.bucketName = bucketName;
+    }
+
+    public String getTagPath() {
+        return tagPath;
+    }
+
+    public void setTagPath(String tagPath) {
+        this.tagPath = tagPath;
     }
 }

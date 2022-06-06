@@ -5,6 +5,9 @@ import edu.jnu.entity.FilePosition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Guo zifan
  * @version 1.0
@@ -22,13 +25,21 @@ public class FilePositionService {
      * @param originalFilename
      * @return
      */
-    public boolean recordPosition(String fileStoragePath, String originalFilename) {
-        FilePosition fp = new FilePosition(fileStoragePath, originalFilename);
+    public boolean recordPosition(String fileStoragePath, String originalFilename, Integer blockNum) {
+        FilePosition fp = new FilePosition(fileStoragePath, originalFilename, blockNum);
         try {
             filePositionDao.save(fp);
         } catch (Exception e) {
             return false;
         }
         return true;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public List<FilePosition> getAllFilePosition() {
+        return filePositionDao.findAll();
     }
 }
