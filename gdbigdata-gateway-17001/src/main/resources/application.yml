@@ -26,4 +26,5 @@ logging:
 
 eureka:
   client:
-    service-url: http://106.14.196.53:17000/eureka/,http://120.24.25.157:17000/eureka/
+    service-url:
+      defaultZone: http://106.14.196.53:17000/eureka/,http://120.24.25.157:17000/eureka/
