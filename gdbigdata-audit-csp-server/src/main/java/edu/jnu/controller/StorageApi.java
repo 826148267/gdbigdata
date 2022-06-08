@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
@@ -35,13 +36,11 @@ public class StorageApi {
     @Autowired
     private FilePositionService filePositionService;
 
-
-
     /**
      * 上传文件.
      * 根据用户上传的密钥和
-     * @param uploadFileDto
-     * @return
+     * @param uploadFileDto 上传文件时的数据传输对象
+     * @return  返回上传结果描述信息
      */
     @PostMapping(value = "/files")
     public ResponseEntity<?> uploadFile(UploadFileDto uploadFileDto) {
@@ -81,13 +80,20 @@ public class StorageApi {
     }
 
     @GetMapping(value = "files")
-    public ResponseEntity<List<GetFileListDto>> getFileInfoList() {
-        List<FilePosition> fps = filePositionService.getAllFilePosition();
+    public ResponseEntity<List<GetFileListDto>> getFileInfoList(@RequestParam(value = "page", defaultValue = "0", required = false) Integer pageOffset,
+                                                                @RequestParam(value = "size", defaultValue = "8", required = false) Integer size) {
+        List<FilePosition> fps = filePositionService.getAllFilePosition(pageOffset, size);
         List<GetFileListDto> results = new ArrayList<>();
-        for (int i = 0; i < fps.size(); i++) {
-            GetFileListDto gfld = new GetFileListDto(fps.get(i));
+        for (FilePosition fp : fps) {
+            GetFileListDto gfld = new GetFileListDto(fp);
             results.add(gfld);
         }
         return ResponseEntity.ok(results);
+    }
+
+    @GetMapping(value = "/files/totals")
+    public ResponseEntity<String> getFilesTotal() {
+        String result = String.valueOf(filePositionService.getTotals());
+        return ResponseEntity.ok(result);
     }
 }

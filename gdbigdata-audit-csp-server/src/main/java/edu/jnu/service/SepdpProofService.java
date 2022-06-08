@@ -41,7 +41,7 @@ public class SepdpProofService {
     }
 
     /**
-     * γ = g^(R^(v_1*s_1+...+v_s*s_s)).
+     * γ = g^(R^(v_1*m_1+...+v_s*m_s)).
      * @param vList 随机数数组
      * @param mList 数据m数组
      * @return  返回gamma，用于完整性证明
@@ -69,14 +69,14 @@ public class SepdpProofService {
     }
 
     /**
-     * α = R^(v_1*m_1+...+v_s*m_s)
+     * α = R^(v_1*s_1+...+v_s*s_s)
      * @param R 标签数组的最后一个大整数
      * @param vList 随机数数组
-     * @param mList 数据数组
+     * @param sList 标签数组
      * @return  返回α
      */
-    public BigInteger getAlpha(BigInteger R, ArrayList<BigInteger> vList, ArrayList<BigInteger> mList) {
-        BigInteger ma = getMultiplyAccumulate(vList, mList);
+    public BigInteger getAlpha(BigInteger R, ArrayList<BigInteger> vList, ArrayList<BigInteger> sList) {
+        BigInteger ma = getMultiplyAccumulate(vList, sList);
         BigInteger q = new BigInteger("107156293229077729250091877527205559797152387746091257873901795127714478829355151268192987540660538345541980278221919721227729188704880233489986953992401708029233425152676955790084204861352363073698986713212153973898552321306534386482266485959243979005986389570173096319404511570103341154639099929588845360061");
         return R.modPow(ma, q);
     }

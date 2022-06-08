@@ -1,7 +1,5 @@
 package edu.jnu.controller;
 
-import com.aliyun.oss.OSS;
-import com.aliyun.oss.model.OSSObject;
 import edu.jnu.dto.IntegerityProof;
 import edu.jnu.dto.ProofIntegrityDto;
 import edu.jnu.service.OSSService;
@@ -10,12 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
+import org.springframework.web.bind.annotation.*;
 import java.io.*;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -37,12 +30,12 @@ public class ProofApi {
     private SepdpProofService sepdpProofService;
 
     /**
-     *
-     * @param proofIntegrityDto
-     * @return
+     * 返回完整性证明材料
+     * @param proofIntegrityDto 文件路径，质询集合，随机数集合，bucketName等
+     * @return  返回 α和γ
      */
-    @GetMapping("/sepdp/proofs/")
-    public ResponseEntity<IntegerityProof> proofIntegrity(ProofIntegrityDto proofIntegrityDto) {
+    @PostMapping("/sepdp/proofs/")
+    public ResponseEntity<IntegerityProof> proofIntegrity(@RequestBody ProofIntegrityDto proofIntegrityDto) {
         // 通过文件路径获取文件
         String dataFullPath = "audit/data/"+proofIntegrityDto.getFilePath();    //  获取文件全路径
         String tagFullPath = "audit/tag/"+proofIntegrityDto.getTagPath();    //  获取文件全路径
@@ -58,6 +51,8 @@ public class ProofApi {
         // 读取标签文件，根据下标集合读取si集合，计算alpha
         ArrayList<BigInteger> mList = sepdpProofService.getMList(mStr, proofIntegrityDto.getiList());
         ArrayList<BigInteger> sList = sepdpProofService.getSList(sStr, proofIntegrityDto.getiList());   //最后一个元素是R
+        mStr = null;
+        sStr = null;
         // 获取R
         if (mList.size() + 1 != sList.size()) {
             LOGGER.error("标签数量与数据块数量关系错误");
