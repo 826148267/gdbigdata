@@ -5,8 +5,8 @@ spring:
     gateway:
       globalcors:
         cors-configurations:
-          '[/**]':
-            allowed-origins: "*"
+          '[/**]':  #生产中最好不要放心所有，同源策略对用户的安全很重要
+            allowedOriginPatterns: "*"
             allow-credentials: true
             allowed-headers: "*"
             allowed-methods: "*"
@@ -15,7 +15,7 @@ spring:
       discovery:
         locator:
           enabled: true # 根据服务名产生默认路由规则，生产时不建议开启，应该以为白名单的形式定义路由规则
-          lower-case-service-id: true # 因为eureka服务名大学，路径是小写，这时大小写自动转换很好用
+          lower-case-service-id: true # 因为eureka服务名大写，路径是小写，这时大小写自动转换很好用
 
 server:
   port: 17001
@@ -28,3 +28,15 @@ eureka:
   client:
     service-url:
       defaultZone: http://106.14.196.53:17000/eureka/,http://120.24.25.157:17000/eureka/
+#  instance:
+#    hostname: 106.14.196.53 #此处使用主机名是为了服务能被调用到
+
+## 开启所有actuator-endpoint
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: '*'
