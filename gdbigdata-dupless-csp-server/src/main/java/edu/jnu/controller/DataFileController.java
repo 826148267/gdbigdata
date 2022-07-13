@@ -118,8 +118,7 @@ public class DataFileController {
     @GetMapping("/oss/data-files/{fileId}")
     public ResponseEntity<ByteArrayResource> downloadDateFile(@PathVariable("fileId") String fileId) {
         try {
-            byte[] bytes = fileService.downloadFileByFileIdInOss(fileId);
-            ByteArrayResource byteArrayResource = new ByteArrayResource(bytes);
+            ByteArrayResource fileContent = new ByteArrayResource(fileService.downloadFileByFileIdInOss(fileId));
             HttpHeaders headers = new HttpHeaders();
             headers.setContentDisposition(ContentDisposition.empty());  // 由于客户端接收到文件还要做预处理，所以此处不向浏览器提下载或者是打开的建议
             headers.setLastModified(new Date().getTime());
@@ -128,18 +127,39 @@ public class DataFileController {
             LOGGER.info("文件fileId:{}下载成功", fileId);
             return ResponseEntity.ok()
                     .headers(headers)
-                    .contentLength(bytes.length)
+                    .contentLength(fileContent.contentLength())
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .body(byteArrayResource);
+                    .body(fileContent);
         } catch (Exception e) {
             LOGGER.info("文件fileId:{}下载失败，cause:{}", fileId, e);
         }
         return ResponseEntity.internalServerError().body(null);
     }
 
+    /**
+     * 根据用户给定的fileId下载文件对应的密钥文件.
+     * @param dataFileId    数据文件的唯一标识符fileId
+     * @return  返回byte[]形式的密钥文件正文
+     */
     @GetMapping("/oss/key-files/{dataFileId}")
     public ResponseEntity<ByteArrayResource> downloadKeyFile(@PathVariable("dataFileId") String dataFileId) {
-        String keyFileId = deduplicateService.getKeyFileIdByDataFileId(dataFileId);
-        return null;
+        try {
+            // 通过数据文件的fileId获取密钥文件，以数组keyFileByteArray的形式返回文件内容
+            ByteArrayResource fileContent = new ByteArrayResource(fileService.getKeyFileByDataFileId(dataFileId));
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentDisposition(ContentDisposition.empty());  // 由于客户端接收到文件还要做预处理，所以此处不向浏览器提下载或者是打开的建议
+            headers.setLastModified(new Date().getTime());
+            headers.setETag("\"" + System.currentTimeMillis() + "\"");
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            LOGGER.info("文件fileId:{}的密钥文件下载成功", dataFileId);
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentLength(fileContent.contentLength())
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(fileContent);
+        } catch (Exception e) {
+            LOGGER.info("文件fileId:{}的密钥文件下载失败，cause:{}", dataFileId, e);
+        }
+        return ResponseEntity.internalServerError().body(null);
     }
 }

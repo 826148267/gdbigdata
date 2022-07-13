@@ -147,4 +147,22 @@ public class FileService {
         ossObject.close();
         return results;
     }
+
+    /**
+     * 根据数据文件的fileId来获取密钥文件的正文.
+     * @param dataFileId    数据文件的fileId
+     * @return  返回byte数组形式的密钥文件正文
+     */
+    public byte[] getKeyFileByDataFileId(String dataFileId) throws IOException {
+        // 获取dataFileId对应的记录
+        DataFileInfoPo dataFileInfoPo = dataFileInfoDao.findByFileId(dataFileId);
+        String targetFilePath = dataFileInfoPo.getFileLogicPath();
+        String targetFileName = dataFileInfoPo.getFileLogicName().split("\\.")[0]+".key";
+        // 根据文件路径和文件名获取密钥文件
+        String fileFullName = targetFilePath + ">>" + targetFileName;
+        OSSObject ossObject = ossService.getObj(fileFullName, "gdbigdata");
+        byte[] results = IOUtils.toByteArray(ossObject.getObjectContent());
+        ossObject.close();
+        return results;
+    }
 }

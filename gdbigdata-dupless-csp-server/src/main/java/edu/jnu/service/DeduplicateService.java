@@ -176,12 +176,15 @@ public class DeduplicateService {
         return true;
     }
 
-
+    /**
+     * 保存密钥文件.
+     * @param userId 用户标识符userid
+     * @param storageType   存储介质，如果OSS，HDFS等
+     * @param file  文件
+     * @return  返回操作执行状态：1、保存成功返回true；2、保存失败返回false
+     */
     public boolean saveKeyFile(String userId, Integer storageType , MultipartFile file) {
         return fileService.saveFileSimple(userId, storageType, file);
     }
 
-    public String getKeyFileIdByDataFileId(String dataFileId) {
-        return null;
-    }
 }

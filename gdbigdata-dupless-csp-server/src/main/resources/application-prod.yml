@@ -1,6 +1,6 @@
 logging:
   file:
-    name: /gdbigdata/auditcspserver/gdbd-dc-17004-log.txt
+    name: /gdbigdata/duplesscspserver/gdbd-dc-17004-log.txt
   level:
     edu.jnu: info
 
