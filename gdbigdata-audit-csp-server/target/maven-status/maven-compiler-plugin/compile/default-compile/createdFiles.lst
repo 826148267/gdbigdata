@@ -4,7 +4,6 @@ edu\jnu\utils\Tools.class
 edu\jnu\AuditCspServer.class
 edu\jnu\service\FilePositionService.class
 edu\jnu\entity\FilePosition.class
-edu\jnu\config\CrossOriginConfig.class
 edu\jnu\controller\StorageApi.class
 edu\jnu\dto\ProofIntegrityDto.class
 edu\jnu\dto\GetFileListDto.class

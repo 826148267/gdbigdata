@@ -7,8 +7,10 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="gdbigdata-eureka-17000" />
+        <module name="gdbigdata-dupless-csp-server" />
         <module name="gdbigdata-tempserver" />
         <module name="gdbigdata-accessmiddleserver" />
+        <module name="gdbigdata-dupless-ks-server" />
         <module name="gdbigdata-audit-tpa-server" />
         <module name="gdbigdata-gateway-17001" />
         <module name="gdbigdata-audit-csp-server" />
@@ -31,6 +33,8 @@
       <module name="gdbigdata-accessrealserver" options="-parameters" />
       <module name="gdbigdata-audit-csp-server" options="-parameters" />
       <module name="gdbigdata-audit-tpa-server" options="-parameters" />
+      <module name="gdbigdata-dupless-csp-server" options="-parameters" />
+      <module name="gdbigdata-dupless-ks-server" options="-parameters" />
       <module name="gdbigdata-eureka-17000" options="-parameters" />
       <module name="gdbigdata-eureka-17200" options="-parameters" />
       <module name="gdbigdata-eureka-17400" options="-parameters" />

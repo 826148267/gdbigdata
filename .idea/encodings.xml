@@ -15,6 +15,8 @@
     <file url="file://$PROJECT_DIR$/gdbigdata-audit-csp-server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/gdbigdata-audit-csp-server/src/main/resources/application.properties" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/gdbigdata-audit-tpa-server/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/gdbigdata-dupless-csp-server/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/gdbigdata-dupless-ks-server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/gdbigdata-eureka-17000/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/gdbigdata-eureka-17200/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/gdbigdata-eureka-17400/src/main/java" charset="UTF-8" />

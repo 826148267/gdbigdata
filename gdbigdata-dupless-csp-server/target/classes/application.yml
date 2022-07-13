@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: dupless-csp
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:mysql://106.14.196.53:3306/gdbigdata?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: txmjj!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      auto-commit: true
+      minimum-idle: 2
+      idle-timeout: 60000
+      connection-timeout: 30000
+      max-lifetime: 1800000
+      pool-name: DatebookHikariCP
+      maximum-pool-size: 5
+  jpa:
+    generate-ddl: true
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+  servlet:
+    multipart:
+      max-file-size: 3000MB
+      max-request-size: 3000MB
+
+server:
+  port: 17004
+  servlet:
+    context-path: /api/v1/storage
+  tomcat:
+    max-http-form-post-size: 100MB
+
+aliyun:
+  oss:
+    endpoint: oss-cn-shanghai.aliyuncs.com
+    access-key-id: LTAI5tP8yVCfJBcjoWbJyFYg
+    access-key-secret: u3nn8uGU0v7DglUF81vZTfmcsnJppv
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://106.14.196.53:17000/eureka/,http://120.24.25.157:17000/eureka/

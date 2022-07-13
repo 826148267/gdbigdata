@@ -16,7 +16,7 @@ VOLUME ["/gdbigdata/gateway17001"]
 #就是我们平时写的 -p
 EXPOSE 17001
 #镜像运行时需要运行的命令
-CMD ["java","-jar","/gdbigdata/gateway17001/gdbigdata-gateway=17001-1.0-SNAPSHOT.jar","&"]
+CMD ["java","-jar","/gdbigdata/gateway17001/gdbigdata-gateway-17001-1.0-SNAPSHOT.jar","&"]
 #指定容器启动时要启动的命令，但CMD只有最后一行会生效
 #CMD
 #类似ADD， 将我们的文件拷贝到镜像中
