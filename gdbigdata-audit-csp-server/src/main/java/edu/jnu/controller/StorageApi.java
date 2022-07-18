@@ -1,24 +1,29 @@
 package edu.jnu.controller;
 
-import edu.jnu.dto.GetFileListDto;
-import edu.jnu.dto.UploadFileDto;
-import edu.jnu.entity.FilePosition;
+import edu.jnu.DTO.DataFileInfoDTO;
+import edu.jnu.VO.GetFileListVO;
+import edu.jnu.VO.UploadFileVO;
+import edu.jnu.PO.DataFileInfoPO;
+import edu.jnu.service.DataFileService;
 import edu.jnu.service.FilePositionService;
 import edu.jnu.service.OSSService;
+import edu.jnu.service.TagFileService;
 import edu.jnu.utils.Tools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Guo zifan
@@ -36,64 +41,111 @@ public class StorageApi {
     @Autowired
     private FilePositionService filePositionService;
 
+    @Autowired
+    private DataFileService dataFileService;
+
+    @Autowired
+    private TagFileService tagFileService;
+
     /**
      * 上传文件.
-     * 根据用户上传的密钥和
-     * @param uploadFileDto 上传文件时的数据传输对象
+     * @param uploadFileVO 上传文件时的数据传输对象
      * @return  返回上传结果描述信息
      */
     @PostMapping(value = "/files")
-    public ResponseEntity<?> uploadFile(UploadFileDto uploadFileDto) {
-        // 将文件上传到OSS服务器中
-        // 获取文件数组
-        ArrayList<MultipartFile> files = uploadFileDto.getFile();
-        long count = files.stream().filter(file -> {
-            String preFileName = Tools.getPreNameInOriginalFile(Objects.requireNonNull(file.getOriginalFilename()));
-            try {
-                // 如果文件名的前缀为data，就存储到数据文件夹，否则存到标签文件夹
-                ossService.uploadObj2OSS("audit/"+preFileName+"/"+uploadFileDto.getFileStoragePath()+"/"+file.getOriginalFilename(),
-                        uploadFileDto.getBucketName(), file.getInputStream());
-            } catch (IOException e) {
-                LOGGER.info("文件"+file.getOriginalFilename()+"在数据流操作阶段出错："+e);
-                return false;
-            }
-            // 能到这个位置说明已经成功执行oss文件上传，接下来将文件位置记录到数据库中
-            boolean flag = true;
-            if ("data".equals(preFileName)) {
-                flag = filePositionService.recordPosition(uploadFileDto.getFileStoragePath(), file.getOriginalFilename(), uploadFileDto.getBlockNum());
-            } else flag = true;
-            if (flag) {
-                LOGGER.info("文件"+file.getOriginalFilename()+"位置已经成功记录到数据库中");
-                return true;
-            } else {
-                LOGGER.info("文件"+file.getOriginalFilename()+"位置记录到数据库中时发生错误");
-                return false;
-            }
-        }).count();
-        if (count == files.size()){     // 如果都存储成功了,返回OK
-            LOGGER.info("文件全数上传成功");
-            return ResponseEntity.ok("数据文件与标签文件存储成功");
-        } else {    // 否则报错
-            LOGGER.info("OSS上传服务出现异常，上传文件时并没有全部上传成功");
-            return ResponseEntity.internalServerError().body("服务器内部错误");
+    public ResponseEntity<String> uploadFile(UploadFileVO uploadFileVO) {
+        MultipartFile tagFile = uploadFileVO.getTagFile();
+        MultipartFile dataFile = uploadFileVO.getDataFile();
+        try {
+            ossService.uploadObj2OSS("audit/data/"+ uploadFileVO.getFileStoragePath()+"/"+dataFile.getOriginalFilename(),
+                    "gdbigdata", dataFile.getInputStream());
+            ossService.uploadObj2OSS("audit/tag/"+ uploadFileVO.getFileStoragePath()+"/"+tagFile.getOriginalFilename(),
+                    "gdbigdata", tagFile.getInputStream());
+        } catch (IOException e) {
+            LOGGER.error("文件在数据流获取操作阶段出错："+e);
+            return ResponseEntity.internalServerError().body("文件"+dataFile.getOriginalFilename()+"存储失败");
         }
+        LOGGER.info("数据文件和标签文件存储成功。");
+        filePositionService.recordDataAndTagFileInfo(
+                uploadFileVO.getUserId(),
+                uploadFileVO.getFileStoragePath(),
+                dataFile.getOriginalFilename(),
+                tagFile.getOriginalFilename(),
+                uploadFileVO.getBlockNum(),
+                uploadFileVO.getR(),
+                uploadFileVO.getMimeType()
+        );
+        LOGGER.info("已将数据文件信息和标签文件信息记录到数据库中。");
+        return ResponseEntity.ok("数据文件和标签文件存储成功");
     }
 
-    @GetMapping(value = "files")
-    public ResponseEntity<List<GetFileListDto>> getFileInfoList(@RequestParam(value = "page", defaultValue = "0", required = false) Integer pageOffset,
-                                                                @RequestParam(value = "size", defaultValue = "8", required = false) Integer size) {
-        List<FilePosition> fps = filePositionService.getAllFilePosition(pageOffset, size);
-        List<GetFileListDto> results = new ArrayList<>();
-        for (FilePosition fp : fps) {
-            GetFileListDto gfld = new GetFileListDto(fp);
-            results.add(gfld);
-        }
-        return ResponseEntity.ok(results);
-    }
-
-    @GetMapping(value = "/files/totals")
-    public ResponseEntity<String> getFilesTotal() {
-        String result = String.valueOf(filePositionService.getTotals());
+    /**
+     * 获取所有文件列表.
+     * 根据用户id分页获取文件信息列表.
+     * @param pageOffset 当前页
+     * @param size 页容量
+     * @return  文件列表
+     */
+    @GetMapping(value = "/{userId}/files/info-list")
+    public ResponseEntity<GetFileListVO> getFileInfoList(@RequestParam(value = "page", defaultValue = "0", required = false) Integer pageOffset,
+                                                               @RequestParam(value = "size", defaultValue = "8", required = false) Integer size,
+                                                               @PathVariable(value = "userId") String userId) {
+        DataFileInfoDTO dataFileInfoDTO = dataFileService.listFileInfoByUserId(pageOffset, size, userId);
+        GetFileListVO result = new GetFileListVO(dataFileInfoDTO);
         return ResponseEntity.ok(result);
+    }
+
+    /**
+     * 根据用户给定的fileId下载文件对应的密钥文件.
+     * @param fileId    数据文件的唯一标识符fileId
+     * @return  返回byte[]形式的密钥文件正文
+     */
+    @GetMapping("/oss/data-files/{fileId}")
+    public ResponseEntity<ByteArrayResource> downloadKeyFile(@PathVariable("fileId") String fileId) {
+        try {
+            // 通过数据文件的fileId获取密钥文件，以数组keyFileByteArray的形式返回文件内容
+            ByteArrayResource fileContent = new ByteArrayResource(dataFileService.getFileByFileId(fileId));
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentDisposition(ContentDisposition.empty());  // 由于客户端接收到文件还要做预处理，所以此处不向浏览器提下载或者是打开的建议
+            headers.setLastModified(new Date().getTime());
+            headers.setETag("\"" + System.currentTimeMillis() + "\"");
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            LOGGER.info("文件fileId:{}的密钥文件下载成功", fileId);
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentLength(fileContent.contentLength())
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(fileContent);
+        } catch (Exception e) {
+            LOGGER.info("文件fileId:{}的密钥文件下载失败，cause:{}", fileId, e);
+        }
+        return ResponseEntity.internalServerError().body(null);
+    }
+
+    /**
+     * 通过fileId获取文件的媒体类型
+     * @param fileId 文件id
+     * @return  文件的媒体类型
+     */
+    @GetMapping("/files/{fileId}/MimeType")
+    public ResponseEntity<String> getMimeTypeByFileId(@PathVariable(value = "fileId") String fileId) {
+        String mimeType = dataFileService.getMimeTypeByFileId(fileId);
+        return ResponseEntity.ok(mimeType);
+    }
+
+    @DeleteMapping("/oss/data-files/{fileId}")
+    public ResponseEntity<String> deleteDataFileByDataFileId(@PathVariable(value = "fileId") String dataFileId) {
+        dataFileService.deleteFileByFileId(dataFileId);
+        dataFileService.deleteFileInfoByFileId(dataFileId);
+        LOGGER.info("成功删除数据文件:{}"+dataFileId);
+        return ResponseEntity.ok(null);
+    }
+
+    @DeleteMapping("/oss/tag-files/{fileId}")
+    public ResponseEntity<String> deleteTagFileByDataFileId(@PathVariable(value = "fileId") String tagFileId) {
+        tagFileService.deleteFileByFileId(tagFileId);
+        tagFileService.deleteFileInfoByFileId(tagFileId);
+        LOGGER.info("成功删除标签文件:{}"+tagFileId);
+        return ResponseEntity.ok(null);
     }
 }

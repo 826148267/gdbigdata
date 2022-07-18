@@ -1,5 +1,10 @@
 package edu.jnu.utils;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
+
 public class Tools {
 	/**
 	 * 获取对象的文件类型.
@@ -29,5 +34,14 @@ public class Tools {
 	 */
 	public static String getPreNameInOriginalFile(String originalFilename) {
 		return originalFilename.split("-")[0];
+	}
+
+	public static int getTotalLines(File file) throws IOException {
+		FileReader in = new FileReader(file);
+		LineNumberReader reader = new LineNumberReader(in);
+		reader.skip(Long.MAX_VALUE);
+		int lines = reader.getLineNumber();
+		reader.close();
+		return lines;
 	}
 }

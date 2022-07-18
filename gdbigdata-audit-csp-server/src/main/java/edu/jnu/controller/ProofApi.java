@@ -1,9 +1,10 @@
 package edu.jnu.controller;
 
-import edu.jnu.dto.IntegerityProof;
-import edu.jnu.dto.ProofIntegrityDto;
+import edu.jnu.VO.IntegerityProof;
+import edu.jnu.VO.ProofIntegrityVO;
 import edu.jnu.service.OSSService;
 import edu.jnu.service.SepdpProofService;
+import edu.jnu.service.TagFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,39 +30,32 @@ public class ProofApi {
     @Autowired
     private SepdpProofService sepdpProofService;
 
+    @Autowired
+    private TagFileService tagFileService;
+
     /**
      * 返回完整性证明材料
-     * @param proofIntegrityDto 文件路径，质询集合，随机数集合，bucketName等
+     * @param proofIntegrityVO 文件路径，质询集合，随机数集合，bucketName等
      * @return  返回 α和γ
      */
     @PostMapping("/sepdp/proofs/")
-    public ResponseEntity<IntegerityProof> proofIntegrity(@RequestBody ProofIntegrityDto proofIntegrityDto) {
+    public ResponseEntity<IntegerityProof> proofIntegrity(@RequestBody ProofIntegrityVO proofIntegrityVO) {
         // 通过文件路径获取文件
-        String dataFullPath = "audit/data/"+proofIntegrityDto.getFilePath();    //  获取文件全路径
-        String tagFullPath = "audit/tag/"+proofIntegrityDto.getTagPath();    //  获取文件全路径
-        String mStr = null;
-        String sStr = null;
-        try {
-            mStr = ossService.getStringInOssObject(dataFullPath, proofIntegrityDto.getBucketName());
-            sStr = ossService.getStringInOssObject(tagFullPath, proofIntegrityDto.getBucketName());
-        } catch (IOException e) {
-            LOGGER.error("文件读取失败");
-        }
+        String dataFullPath = "audit/data/"+proofIntegrityVO.getFilePath()+"/"+proofIntegrityVO.getFileName();    //  获取文件全路径
+        String tagFullPath = "audit/tag/"+tagFileService.getTagFullPathByTagFileId(proofIntegrityVO.getTagFileId());    //  获取文件全路径
         // 读取数据文件，根据下标集合读取mi集合，计算beta
         // 读取标签文件，根据下标集合读取si集合，计算alpha
-        ArrayList<BigInteger> mList = sepdpProofService.getMList(mStr, proofIntegrityDto.getiList());
-        ArrayList<BigInteger> sList = sepdpProofService.getSList(sStr, proofIntegrityDto.getiList());   //最后一个元素是R
-        mStr = null;
-        sStr = null;
-        // 获取R
-        if (mList.size() + 1 != sList.size()) {
+        ArrayList<BigInteger> mList = sepdpProofService.getMList(dataFullPath, proofIntegrityVO.getiList());    // 最后一块是文件格式
+        ArrayList<BigInteger> sList = sepdpProofService.getSList(tagFullPath, proofIntegrityVO.getiList());   //最后一块是R
+        if (mList.size() != sList.size()) {
             LOGGER.error("标签数量与数据块数量关系错误");
             return ResponseEntity.internalServerError().body(null);
         }
-        BigInteger R = sList.get(mList.size());
+        // 获取R
+        BigInteger R = tagFileService.getRByFileId(proofIntegrityVO.getTagFileId());
         // 通过beta计算gamma
-        BigInteger gamma = sepdpProofService.getGamma(proofIntegrityDto.getvList(), mList);
-        BigInteger alpha = sepdpProofService.getAlpha(R, proofIntegrityDto.getvList(), sList);
+        BigInteger gamma = sepdpProofService.getGamma(proofIntegrityVO.getvList(), mList);
+        BigInteger alpha = sepdpProofService.getAlpha(R, proofIntegrityVO.getvList(), sList);
         // 将gamma和alpha封装返回
         LOGGER.info("成功返回证明,其中:");
         LOGGER.info("alpha:"+String.valueOf(alpha));
@@ -69,4 +63,5 @@ public class ProofApi {
         LOGGER.info("R:"+String.valueOf(R));
         return ResponseEntity.ok(new IntegerityProof(String.valueOf(alpha), String.valueOf(gamma), String.valueOf(R)));
     }
+
 }

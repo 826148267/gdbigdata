@@ -1,8 +1,18 @@
 package edu.jnu.service;
 
+import com.aliyun.oss.model.OSSObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * @author Guo zifan
@@ -12,15 +22,82 @@ import java.util.ArrayList;
 @Service
 public class SepdpProofService {
 
-    public ArrayList<BigInteger> getMList(String mStr, ArrayList<Integer> iList) {
-        return getBigIntListInString(mStr, iList);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SepdpProofService.class);
+
+    @Autowired
+    private OSSService ossService;
+
+    /**
+     * 获取被质询的数据块集合.
+     * @param fileFullPath  文件的全路径
+     * @param iList 质询集合
+     * @return  数据块集合
+     */
+    public ArrayList<BigInteger> getMList(String fileFullPath, ArrayList<Integer> iList) {
+        // 通过文件获取文件输入流
+        OSSObject ossObject = ossService.getObj(fileFullPath, "gdbigdata");
+        // 对iList进行排序
+        Collections.sort(iList);
+        // 依照iList的元素的值vi获取第vi行数据
+        return getListFromPointedLinesArrayInInputStream(ossObject.getObjectContent(), iList);
     }
 
-    public ArrayList<BigInteger> getSList(String sStr, ArrayList<Integer> iList) {
-        ArrayList<BigInteger> results = getBigIntListInString(sStr, iList);
-        String[] tmps = sStr.split(",");
-        results.add(new BigInteger(tmps[tmps.length-1]));
-        return results;
+    public ArrayList<BigInteger> getSList(String fileFullPath, ArrayList<Integer> iList) {
+        // 通过文件获取文件输入流
+        OSSObject ossObject = ossService.getObj(fileFullPath, "gdbigdata");
+        // 对iList进行排序
+        Collections.sort(iList);
+        // 依照iList的元素的值vi获取第vi行数据
+        return getListFromPointedLinesArrayInInputStream(ossObject.getObjectContent(), iList);
+    }
+
+    /**
+     * 通过行数数组从输入流中获取数据块集合.
+     * @param inputStream 输入流
+     * @param iList 列表中为数字集合，数字代表需要读取的行数
+     * @return  返回数据块集合
+     */
+    private ArrayList<BigInteger> getListFromPointedLinesArrayInInputStream(InputStream inputStream, ArrayList<Integer> iList) {
+        ArrayList<BigInteger> result = new ArrayList<>();   // 函数返回值
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+        BufferedReader reader = new BufferedReader(inputStreamReader);
+        String str = null;  // 当前行数据块
+        int lineCounter = 0;   // 当前行指针
+        try {
+            // 初始化目标行号
+            if (iList.size() < 1) {
+                LOGGER.info("随机质询下标集合为空，无法产生证明");
+                return null;
+            }
+            int index = 0;
+            int lineNum = iList.get(index);
+
+            while ((str = reader.readLine()) != null) { // 读取下一行
+                // 如果目标行号等于当前行号
+                if (((int) lineNum) == lineCounter) {
+                    // 则取出该行数据
+                    result.add(new BigInteger(str));
+                    // 更新到下一个目标行号,
+                    index ++;
+                    if (index < iList.size()) {
+                        lineNum = iList.get(index);
+                    } else {    // 如果时最后一个目标行号，就结束读取输入流
+                        break;
+                    }
+                }
+                lineCounter ++; // 当前行指针后移1行
+            }
+        } catch (IOException e) {
+            LOGGER.error("读取输入流时失败，原因为{}", e.getMessage());
+        } finally {
+            try {
+                inputStreamReader.close();
+                reader.close();
+            } catch (IOException e) {
+                LOGGER.error("关闭输入流时失败，原因为{}", e.getMessage());
+            }
+        }
+        return result;
     }
 
     /**
@@ -30,15 +107,15 @@ public class SepdpProofService {
      * @param iList 下标数组
      * @return  返回新数组
      */
-    private ArrayList<BigInteger> getBigIntListInString(String originStr, ArrayList<Integer> iList) {
+//    private ArrayList<BigInteger> getBigIntListInString(String originStr, ArrayList<Integer> iList) {
         // 以.分割字符串，然后将所以字符串都转化为大整数类型
-        String[] tmps = originStr.split(",");
-        ArrayList<BigInteger> results = new ArrayList<>();
-        for (int i = 0; i < iList.size(); i++) {
-            results.add(i, new BigInteger(tmps[iList.get(i)]));
-        }
-        return results;
-    }
+//        String[] tmps = originStr.split(",");
+//        ArrayList<BigInteger> results = new ArrayList<>();
+//        for (int i = 0; i < iList.size(); i++) {
+//            results.add(i, new BigInteger(tmps[iList.get(i)]));
+//        }
+//        return results;
+//    }
 
     /**
      * γ = g^(R^(v_1*m_1+...+v_s*m_s)).

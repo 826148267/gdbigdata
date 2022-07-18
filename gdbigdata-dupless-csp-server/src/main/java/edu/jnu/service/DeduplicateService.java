@@ -2,6 +2,7 @@ package edu.jnu.service;
 
 import com.aliyun.oss.model.OSSObject;
 import edu.jnu.dao.DataFileInfoDao;
+import edu.jnu.dao.KeyFileInfoDao;
 import edu.jnu.domain.FileInfo;
 import edu.jnu.po.DataFileInfoPo;
 import edu.jnu.utils.Tools;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -24,6 +26,7 @@ import java.util.List;
  * @version 1.0
  * @date 2022年06月15日 21:31
  */
+@Transactional
 @Service
 public class DeduplicateService {
 
@@ -31,6 +34,9 @@ public class DeduplicateService {
 
     @Autowired
     private DataFileInfoDao dataFileInfoDao;
+
+    @Autowired
+    private KeyFileInfoDao keyFileInfoDao;
 
     @Autowired
     private FileService fileService;
@@ -51,7 +57,7 @@ public class DeduplicateService {
             boolean existSameFile = false;
             // 遍历文件列表，逐个读取文件
             for (DataFileInfoPo fip : fips) {
-                OSSObject oo = ossService.getObj(fip.getFileId()+".txt", "gdbigdata");
+                OSSObject oo = ossService.getObj(fip.getFileActualPath()+">>"+fip.getFileActualName(), "gdbigdata");
                 // 判断两文件的数据
                 try {
                     if (Tools.isSameContent(oo.getObjectContent(), fileInfo.getFile().getInputStream())) {
@@ -187,4 +193,28 @@ public class DeduplicateService {
         return fileService.saveFileSimple(userId, storageType, file);
     }
 
+    /**
+     * 通过文件id删除数据文件信息.
+     * @param fileId 数据文件Id
+     */
+    public void deleteDataFileInfoByFileId(String fileId) {
+        dataFileInfoDao.deleteByFileId(fileId);
+    }
+
+    /**
+     * 通过密钥文件全路径删除密钥文件.
+     * @param fileFullPath  密钥文件全路径
+     */
+    public void deleteKeyFileByFileFullPath(String fileFullPath) {
+        ossService.deleteOssObject(fileFullPath, "gdbigdata");
+    }
+
+    /**
+     * 通过逻辑路径和逻辑文件名匹配出密钥文件信息，并删除.
+     * @param filePath 密钥文件逻辑路径
+     * @param fileName 密钥文件逻辑名
+     */
+    public void deleteKayFileInfoByFilePathAndFileName(String filePath, String fileName) {
+        keyFileInfoDao.deleteByFilePathIsAndFileNameIs(filePath, fileName);
+    }
 }
