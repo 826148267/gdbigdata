@@ -1,6 +1,6 @@
 package edu.jnu.dao;
 
-import edu.jnu.entity.FilePosition;
+import edu.jnu.PO.DataFileInfoPO;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @version 1.0
  * @date 2022年06月04日 19:58
  */
-public interface FilePositionDao extends JpaRepository<FilePosition, Integer> {
+public interface FilePositionDao extends JpaRepository<DataFileInfoPO, Integer> {
 }

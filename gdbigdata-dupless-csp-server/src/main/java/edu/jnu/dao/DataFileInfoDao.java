@@ -59,4 +59,10 @@ public interface DataFileInfoDao extends JpaRepository<DataFileInfoPo, Integer> 
      * @return 返回该文件id对应的文件信息
      */
     DataFileInfoPo findByFileId(String fileId);
+
+    /**
+     * 通过fileId删除其对应行
+     * @param fileId    文件唯一标识符
+     */
+    void deleteByFileId(String fileId);
 }

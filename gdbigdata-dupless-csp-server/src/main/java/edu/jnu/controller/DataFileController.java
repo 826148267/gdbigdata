@@ -138,28 +138,52 @@ public class DataFileController {
 
     /**
      * 根据用户给定的fileId下载文件对应的密钥文件.
-     * @param dataFileId    数据文件的唯一标识符fileId
+     * @param fileId    数据文件的唯一标识符fileId
      * @return  返回byte[]形式的密钥文件正文
      */
-    @GetMapping("/oss/key-files/{dataFileId}")
-    public ResponseEntity<ByteArrayResource> downloadKeyFile(@PathVariable("dataFileId") String dataFileId) {
+    @GetMapping("/oss/key-files/{fileId}")
+    public ResponseEntity<ByteArrayResource> downloadKeyFile(@PathVariable("fileId") String fileId) {
         try {
             // 通过数据文件的fileId获取密钥文件，以数组keyFileByteArray的形式返回文件内容
-            ByteArrayResource fileContent = new ByteArrayResource(fileService.getKeyFileByDataFileId(dataFileId));
+            ByteArrayResource fileContent = new ByteArrayResource(fileService.getKeyFileByDataFileId(fileId));
             HttpHeaders headers = new HttpHeaders();
             headers.setContentDisposition(ContentDisposition.empty());  // 由于客户端接收到文件还要做预处理，所以此处不向浏览器提下载或者是打开的建议
             headers.setLastModified(new Date().getTime());
             headers.setETag("\"" + System.currentTimeMillis() + "\"");
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            LOGGER.info("文件fileId:{}的密钥文件下载成功", dataFileId);
+            LOGGER.info("文件fileId:{}的密钥文件下载成功", fileId);
             return ResponseEntity.ok()
                     .headers(headers)
                     .contentLength(fileContent.contentLength())
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .body(fileContent);
         } catch (Exception e) {
-            LOGGER.info("文件fileId:{}的密钥文件下载失败，cause:{}", dataFileId, e);
+            LOGGER.info("文件fileId:{}的密钥文件下载失败，cause:{}", fileId, e);
         }
         return ResponseEntity.internalServerError().body(null);
+    }
+
+    /**
+     * 通过数据文件逻辑路径、数据文件逻辑名删除密钥文件信息和密钥文件.
+     * 通过文件id删除数据文件信息.
+     * @param fileId    数据文件id
+     * @param fileLogicPath 数据文件逻辑路径
+     * @param fileLogicName 数据文件逻辑名
+     */
+    @DeleteMapping("/files/{fileId}")
+    public ResponseEntity<String> deleteFileByFileId(@PathVariable(value = "fileId") String fileId,
+                                                     @RequestParam(value = "fileLogicPath") String fileLogicPath,
+                                                     @RequestParam(value = "fileLogicName") String fileLogicName) {
+        // 删除数据文件表中信息
+        deduplicateService.deleteDataFileInfoByFileId(fileId);
+        // 获取密钥文件全路径
+        String fileFullPath = fileLogicPath + ">>" + fileLogicName;
+        // 通过文件全路径删除文件
+        deduplicateService.deleteKeyFileByFileFullPath(fileFullPath);
+        // 通过密钥文件路径和密钥文件名删除密钥文件表中信息
+        String keyFilePath = fileLogicPath; // 数据文件的逻辑路径就是密钥文件的路径
+        String keyFileName = fileLogicName.split("\\.")[0]+".key";
+        deduplicateService.deleteKayFileInfoByFilePathAndFileName(keyFilePath, keyFileName);
+        return ResponseEntity.ok(null);
     }
 }

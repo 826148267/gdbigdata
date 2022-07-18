@@ -44,10 +44,10 @@ public class OSSService {
         // 创建PutObjectRequest对象。
         PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectName, inputStream);
         // 如果需要上传时设置存储类型和访问权限，请参考以下示例代码。
-        ObjectMetadata metadata = new ObjectMetadata();
+//        ObjectMetadata metadata = new ObjectMetadata();
         // 根据文件后缀来决定应该上传什么格式的数据。
-        metadata.setContentType(Tools.getContentType(objectName));
-        putObjectRequest.setMetadata(metadata);
+//        metadata.setContentType(Tools.getContentType(objectName));
+//        putObjectRequest.setMetadata(metadata);
         // 上传文件。
         oss.putObject(putObjectRequest);
     }
@@ -61,6 +61,15 @@ public class OSSService {
      */
     public OSSObject getObj(String objName, String bucketName) {
         return oss.getObject(new GetObjectRequest(bucketName, objName));
+    }
+
+    /**
+     * 删除文件对象
+     * @param objName   文件对象名
+     * @param bucketName    bucket名
+     */
+    public void deleteObj(String objName, String bucketName) {
+        oss.deleteObject(bucketName, objName);
     }
 
     /**
