@@ -7,6 +7,7 @@ import edu.jnu.dto.UserDto;
 import edu.jnu.response.controller.CtrlResEnum;
 import edu.jnu.service.UserService;
 import edu.jnu.utils.JsonResponse;
+import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
  * @date 2022年01月30日 20:10
  */
 @RestController
+@Api(tags = "用户信息操作接口")
 public class UserApi {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserApi.class);
@@ -27,6 +29,7 @@ public class UserApi {
     private UserService userService;
 
     @PostMapping ("/users")
+    @ApiOperation("创建用户信息接口")
     public JsonResponse<?> createUser(@Validated @RequestBody UserDto userDto) {
         // 判断用户是否已经存在
         if (userService.isExist(userDto.getUserName())) {
@@ -37,8 +40,7 @@ public class UserApi {
         User user = new User(userDto.getUserName(),
                 userDto.getUserAddress(),
                 userDto.getUserOrganization(),
-                userDto.getUserFileNums()
-        );
+                userDto.getUserFileNums());
 
         // 如果没有问题就调用real server的接口，将数据存到数据库
         boolean flag = userService.createNewUser(user);
@@ -53,6 +55,8 @@ public class UserApi {
     }
 
     @GetMapping("/users/{userName}")
+    @ApiOperation("获取用户信息接口")
+    @ApiImplicitParam(name = "userName", value = "用户名", required = true, dataType = "String", paramType = "path", example = "id666")
     public JsonResponse<User> getUserInfo(@PathVariable("userName") String userName) {
         // 根据UserName搜索出id
         if (!userService.isExist(userName)) {
@@ -66,6 +70,8 @@ public class UserApi {
     }
 
     @PutMapping("/users/{userName}")
+    @ApiOperation("更新用户信息接口（建议一条用户信息记录中多个字段值发生改变时使用）")
+    @ApiImplicitParam(name = "userName", value = "用户名", required = true, dataType = "String", paramType = "path", example = "id666")
     public JsonResponse<User> updateUserInfo(@PathVariable("userName") String userName,
                                              @Validated @RequestBody UserDto userDto) {
         // 根据UserName搜索出id
@@ -77,16 +83,17 @@ public class UserApi {
                 userDto.getUserName(),
                 userDto.getUserAddress(),
                 userDto.getUserOrganization(),
-                userDto.getUserFileNums()
-        );
+                userDto.getUserFileNums());
         User updatedUser = userService.updateUserInfo(user);
         LOGGER.info("用户名："+userName+"修改用户信息成功\n"
-                +"用户信息由"+ JSONObject.toJSONString(user, true)+"\n"
+                +"用户信息由"+JSONObject.toJSONString(user, true)+"\n"
                 +"修改为"+JSONObject.toJSONString(updatedUser, true));
         return new JsonResponse<>(CtrlResEnum.SUCCESS, updatedUser);
     }
 
     @PatchMapping("/users/{userName}")
+    @ApiOperation("查询或者修改一条用户信息的某个字段")
+    @ApiImplicitParam(name = "userName", value = "用户名", required = true, dataType = "String", paramType = "path", example = "id666")
     public JsonResponse<String> operateAUserInfoField(
             @PathVariable("userName") String userName,
             @Validated @RequestBody PatchUserInfoDto<String> patchUserInfoDto) {

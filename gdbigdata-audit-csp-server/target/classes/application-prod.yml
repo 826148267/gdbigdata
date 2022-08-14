@@ -3,3 +3,6 @@ logging:
     name: /gdbigdata/auditcspserver/gdbd-acs-log.txt
   level:
     edu.jnu: info
+
+swagger:
+  enable: false

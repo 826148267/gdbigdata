@@ -8,3 +8,6 @@ eureka:
   instance:
     prefer-ip-address: true
     ip-address: 120.24.25.157 #xzf个人服务器的Ip地址，部署到哪台机器就用哪台机器的ip
+
+swagger:
+  enable: false

@@ -7,6 +7,9 @@ import edu.jnu.dto.SaveDataFileDto;
 import edu.jnu.dto.SaveKeyFileDto;
 import edu.jnu.service.DeduplicateService;
 import edu.jnu.service.FileService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,7 @@ import java.util.Date;
  * @date 2022年06月15日 14:12
  */
 @RestController
+@Api(tags = "去重模块文件存取相关业务接口")
 public class DataFileController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataFileController.class);
@@ -38,6 +42,7 @@ public class DataFileController {
      * @return  返回真实路径
      */
     @PostMapping("data-file")
+    @ApiOperation("数据文件存储接口")
     public ResponseEntity<String> saveDataFile(SaveDataFileDto saveDataFileDto) {
         int strategy = saveDataFileDto.getStrategy();
         boolean flag;
@@ -67,6 +72,7 @@ public class DataFileController {
      * @return  返回操作执行结果，true为操作成功，false为操作失败
      */
     @PostMapping("key-file")
+    @ApiOperation("密钥文件存储接口")
     public ResponseEntity<String> saveKeyFile(SaveKeyFileDto saveKeyFileDto) {
         if (deduplicateService.saveKeyFile(saveKeyFileDto.getUserId(), saveKeyFileDto.getStorageType(), saveKeyFileDto.getFile())) {
             LOGGER.info("存储密钥文件成功");
@@ -82,6 +88,7 @@ public class DataFileController {
      * @return 返回全局去重操作执行状态
      */
     @GetMapping("deduplication-global")
+    @ApiOperation("立即执行全局数据文件去重接口")
     public ResponseEntity<String> deduplicationGlobal() {
         if (deduplicateService.deduplicationGlobal()) {
             LOGGER.info("全局文件去重成功");
@@ -100,9 +107,10 @@ public class DataFileController {
      * @return 返回该用户Id所拥有的文件信息的列表
      */
     @GetMapping("{userId}/files")
-    public ResponseEntity<GetUserFileListDto> getFileListByUserId(@PathVariable("userId") String userId,
-                                                                  @RequestParam(value = "page", defaultValue = "0", required = false) Integer currentPage,
-                                                                  @RequestParam(value = "size", defaultValue = "8", required = false) Integer size) {
+    @ApiOperation("根据用户id进行分页获取用户文件列表的接口")
+    public ResponseEntity<GetUserFileListDto> getFileListByUserId(@PathVariable("userId") @ApiParam("用户id") String userId,
+                                                                  @RequestParam(value = "page", defaultValue = "0", required = false) @ApiParam("当前处在第几页") Integer currentPage,
+                                                                  @RequestParam(value = "size", defaultValue = "8", required = false) @ApiParam("每一页的记录容量") Integer size) {
 //        根据用户id获取其所拥有的文件信息列表
         GetUserFileListDto result = fileService.getFileListByUserId(userId, currentPage, size);
         LOGGER.info("分页获取文件列表成功");
@@ -116,7 +124,8 @@ public class DataFileController {
      * @return  返回内存中的byte[]，byte[]为文件内容
      */
     @GetMapping("/oss/data-files/{fileId}")
-    public ResponseEntity<ByteArrayResource> downloadDateFile(@PathVariable("fileId") String fileId) {
+    @ApiOperation("下载数据文件的接口")
+    public ResponseEntity<ByteArrayResource> downloadDateFile(@PathVariable("fileId") @ApiParam("文件id") String fileId) {
         try {
             ByteArrayResource fileContent = new ByteArrayResource(fileService.downloadFileByFileIdInOss(fileId));
             HttpHeaders headers = new HttpHeaders();
@@ -142,7 +151,8 @@ public class DataFileController {
      * @return  返回byte[]形式的密钥文件正文
      */
     @GetMapping("/oss/key-files/{fileId}")
-    public ResponseEntity<ByteArrayResource> downloadKeyFile(@PathVariable("fileId") String fileId) {
+    @ApiOperation("下载密钥文件的接口")
+    public ResponseEntity<ByteArrayResource> downloadKeyFile(@PathVariable("fileId") @ApiParam("文件id") String fileId) {
         try {
             // 通过数据文件的fileId获取密钥文件，以数组keyFileByteArray的形式返回文件内容
             ByteArrayResource fileContent = new ByteArrayResource(fileService.getKeyFileByDataFileId(fileId));
@@ -171,9 +181,10 @@ public class DataFileController {
      * @param fileLogicName 数据文件逻辑名
      */
     @DeleteMapping("/files/{fileId}")
-    public ResponseEntity<String> deleteFileByFileId(@PathVariable(value = "fileId") String fileId,
-                                                     @RequestParam(value = "fileLogicPath") String fileLogicPath,
-                                                     @RequestParam(value = "fileLogicName") String fileLogicName) {
+    @ApiOperation("删除文件的接口")
+    public ResponseEntity<String> deleteFileByFileId(@PathVariable(value = "fileId") @ApiParam("文件id") String fileId,
+                                                     @RequestParam(value = "fileLogicPath") @ApiParam("文件地址，注意非文件实际存储时的路径") String fileLogicPath,
+                                                     @RequestParam(value = "fileLogicName") @ApiParam("文件名，注意非文件实际存储时的文件名") String fileLogicName) {
         // 删除数据文件表中信息
         deduplicateService.deleteDataFileInfoByFileId(fileId);
         // 获取密钥文件全路径
