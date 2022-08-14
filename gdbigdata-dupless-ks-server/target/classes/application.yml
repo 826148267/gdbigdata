@@ -6,6 +6,8 @@ server:
 spring:
   application:
     name: dupless-ks
+  profiles:
+    active: dev
 
 eureka:
   client:

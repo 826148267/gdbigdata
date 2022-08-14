@@ -19,7 +19,7 @@ import java.util.ArrayList;
  */
 @Configuration
 @EnableOpenApi
-public class SwaggerConfig {
+public class Swagger3Config {
 
     @Value("${swagger.enable}")
     private boolean swaggerSwitch;
@@ -38,8 +38,8 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfo(
-                "检索模块真实服务器业务功能接口",
-                "私有信息检索模块增删改查接口",
+                "去重模块业务功能接口",
+                "去重模块中存储服务接口",
                 "v1.0",
                 "https://github.com/826148267",
                 new Contact("郭梓繁", "https://github.com/826148267", "826148267@qq.com"),

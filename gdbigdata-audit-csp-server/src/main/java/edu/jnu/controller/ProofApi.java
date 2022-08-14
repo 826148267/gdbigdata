@@ -2,15 +2,15 @@ package edu.jnu.controller;
 
 import edu.jnu.VO.IntegerityProof;
 import edu.jnu.VO.ProofIntegrityVO;
-import edu.jnu.service.OSSService;
 import edu.jnu.service.SepdpProofService;
 import edu.jnu.service.TagFileService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.io.*;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
@@ -20,12 +20,10 @@ import java.util.ArrayList;
  * @date 2022年05月28日 10:47
  */
 @RestController
+@Api(tags = "完整性证明接口")
 public class ProofApi {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProofApi.class);
-
-    @Autowired
-    private OSSService ossService;
 
     @Autowired
     private SepdpProofService sepdpProofService;
@@ -39,6 +37,7 @@ public class ProofApi {
      * @return  返回 α和γ
      */
     @PostMapping("/sepdp/proofs/")
+    @ApiOperation("完整性证明接口")
     public ResponseEntity<IntegerityProof> proofIntegrity(@RequestBody ProofIntegrityVO proofIntegrityVO) {
         // 通过文件路径获取文件
         String dataFullPath = "audit/data/"+proofIntegrityVO.getFilePath()+"/"+proofIntegrityVO.getFileName();    //  获取文件全路径

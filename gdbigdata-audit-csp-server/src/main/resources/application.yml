@@ -2,7 +2,7 @@ spring:
   application:
     name: audit-csp
   profiles:
-    active: prod
+    active: dev
   datasource:
     url: jdbc:mysql://106.14.196.53:3306/gdbd_acs?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: root
