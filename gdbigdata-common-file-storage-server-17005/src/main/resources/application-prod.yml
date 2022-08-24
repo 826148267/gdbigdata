@@ -1,0 +1,8 @@
+logging:
+  file:
+    name: /gdbigdata/CommonFileStorageServer17005/gdbd-cfss-17005-log.txt
+  level:
+    edu.jnu: info
+
+swagger:
+  enable: false

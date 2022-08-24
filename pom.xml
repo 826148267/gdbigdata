@@ -134,6 +134,7 @@
         <module>gdbigdata-gateway-17001</module>
         <module>gdbigdata-dupless-csp-server</module>
         <module>gdbigdata-dupless-ks-server</module>
+        <module>gdbigdata-common-file-storage-server-17005</module>
     </modules>
 
     <build>
