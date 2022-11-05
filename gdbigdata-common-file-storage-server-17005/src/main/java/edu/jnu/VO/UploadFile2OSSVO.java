@@ -10,36 +10,27 @@ import org.springframework.web.multipart.MultipartFile;
 /**
  * @author Guo zifan
  * @version 1.0
- * @date 2022年08月24日 16:09
+ * @date 2022年09月23日 19:42
  */
 @Getter
 @Setter
-@ApiModel("上传文件实体类")
-public class UploadFile2HDFSVO {
+@ApiModel("上传文件至本地存储实体类")
+public class UploadFile2OSSVO {
     @JSONField(name = "userId")
     @ApiModelProperty(value = "用户id", required = true)
     private String userId;
-    @JSONField(name = "tagFile")
-    @ApiModelProperty(value = "标签文件", required = true)
-    private MultipartFile tagFile;
     @JSONField(name = "dataFile")
     @ApiModelProperty(value = "数据文件", required = true)
     private MultipartFile dataFile;
     @JSONField(name = "keyFile")
     @ApiModelProperty(value = "密钥文件", required = true)
     private MultipartFile keyFile;
-    @JSONField(name = "blockNum")
-    @ApiModelProperty(value = "数据块数", required = true)
-    private Integer blockNum;
-    @JSONField(name = "r")
-    @ApiModelProperty(value = "验签参数", required = true)
-    private String r;
     @JSONField(name = "mimeType")
     @ApiModelProperty(value = "文件格式", required = true)
     private String mimeType;
-    @JSONField(name = "hashValue")
+    @JSONField(name = "fileHashValue")
     @ApiModelProperty(value = "数据文件hash值", required = true)
-    private String hashValue;
+    private String fileHashValue;
     @JSONField(name = "fileDir")
     @ApiModelProperty(value = "文件路径", required = true)
     private String fileDir;

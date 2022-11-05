@@ -21,14 +21,14 @@ public interface DataFileInfoDAO extends JpaRepository<DataFileInfoPO, Integer> 
     Page<DataFileInfoPO> findAllByUserId(Pageable pageable, String userId);
 
     /**
-     * 根据fileId获取对应的文件信息
+     * 根据fileId获取对应的文件信息.
      * @param fileId    文件id
      * @return  返回整条文件记录
      */
     DataFileInfoPO findByFileId(String fileId);
 
     /**
-     * 根据fileId删除文件信息
+     * 根据fileId删除文件信息.
      * @param fileId 文件id
      */
     void deleteByFileId(String fileId);
