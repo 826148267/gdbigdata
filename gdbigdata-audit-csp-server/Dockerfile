@@ -14,7 +14,7 @@ WORKDIR /gdbigdata/auditcspserver
 #容器卷 主要是怕运维人员忘记-v了，有了它会匿名挂载起来，而不会乱写到容器的存储层中
 VOLUME ["/gdbigdata/auditcspserver"]
 #就是我们平时写的 -p
-EXPOSE 17002
+EXPOSE 10090
 #镜像运行时需要运行的命令
 CMD ["java","-jar","/gdbigdata/auditcspserver/gdbigdata-audit-csp-server-1.0-SNAPSHOT.jar",">","gdbd-acs-log.txt","&"]
 #指定容器启动时要启动的命令，但CMD只有最后一行会生效

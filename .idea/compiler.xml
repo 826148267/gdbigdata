@@ -2,12 +2,14 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="gdbigdata-eureka-17000" />
         <module name="gdbigdata-dupless-csp-server" />
+        <module name="gdbd-user-auth" />
         <module name="gdbigdata-tempserver" />
         <module name="gdbigdata-accessmiddleserver" />
         <module name="gdbigdata-dupless-ks-server" />
@@ -19,6 +21,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="create-data" target="17" />
       <module name="gdbidata-erueka-17000" target="17" />
       <module name="gdbigdata-eureka-17200" target="17" />
       <module name="gdbigdata-eureka-17400" target="17" />
@@ -27,6 +30,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="gdbd-user-auth" options="-parameters" />
       <module name="gdbidata-erueka-17000" options="-parameters" />
       <module name="gdbigdata-access-sqlshow-server" options="-parameters" />
       <module name="gdbigdata-accessmiddleserver" options="-parameters" />

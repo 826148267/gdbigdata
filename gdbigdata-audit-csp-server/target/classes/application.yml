@@ -2,11 +2,11 @@ spring:
   application:
     name: audit-csp
   profiles:
-    active: dev
+    active: prod
   datasource:
-    url: jdbc:mysql://106.14.196.53:3306/gdbd_acs?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://gz-cynosdbmysql-grp-46q2jczh.sql.tencentcdb.com:25953/gdbd_acs?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: root
-    password: txmjj!
+    password: n.Tw3f6EgB4dHRa
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
@@ -29,9 +29,7 @@ spring:
       max-request-size: 3000MB
 
 server:
-  port: 17002
-  servlet:
-    context-path: /api/v1/storage
+  port: 10090
   tomcat:
     max-http-form-post-size: 100MB
 
@@ -40,11 +38,3 @@ aliyun:
     endpoint: oss-cn-shanghai.aliyuncs.com
     access-key-id: LTAI5tP8yVCfJBcjoWbJyFYg
     access-key-secret: u3nn8uGU0v7DglUF81vZTfmcsnJppv
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://106.14.196.53:17000/eureka/,http://120.24.25.157:17000/eureka/
-  instance:
-    prefer-ip-address: true
-    ip-address: 120.24.25.157 #xzf个人服务器的Ip地址，部署到哪台机器就用哪台机器的ip

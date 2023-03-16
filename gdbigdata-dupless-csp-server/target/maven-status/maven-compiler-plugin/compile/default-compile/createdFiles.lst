@@ -5,6 +5,7 @@ edu\jnu\dto\SaveKeyFileDto.class
 edu\jnu\po\DataFileInfoPo.class
 edu\jnu\dao\DataFileInfoDao.class
 edu\jnu\dto\GetUserFileListDto.class
+edu\jnu\config\Swagger3Config.class
 edu\jnu\exception\UnknownStorageTypeException.class
 edu\jnu\service\OSSFactory.class
 edu\jnu\config\OssConfig.class

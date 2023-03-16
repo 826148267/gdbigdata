@@ -13,4 +13,5 @@ public class AccessMiddleServer {
     public static void main(String[] args){
         ApplicationContext app = SpringApplication.run(AccessMiddleServer.class, args);
     }
+
 }

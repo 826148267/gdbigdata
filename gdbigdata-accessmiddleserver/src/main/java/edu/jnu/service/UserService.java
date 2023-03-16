@@ -151,7 +151,6 @@ public class UserService {
         redisTemplate.opsForValue().increment("userInfoRecordNum");
     }
 
-
     public void saveUserNameAndId(String userName, String nowRecordNum) {
         redisTemplate.opsForValue().set(userName, nowRecordNum);
         redisTemplate.persist(userName);

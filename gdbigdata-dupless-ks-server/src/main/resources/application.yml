@@ -1,7 +1,5 @@
 server:
-  port: 17003
-  servlet:
-    context-path: /api/v1/storage
+  port: 80
 
 spring:
   application:
@@ -12,13 +10,13 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://106.14.196.53:17000/eureka/,http://120.24.25.157:17000/eureka/
+      defaultZone: http://eureka-server-0.eureka-server:17000/eureka/,http://eureka-server-1.eureka-server:17000/eureka/
   instance:
     prefer-ip-address: true
-    ip-address: 120.24.25.157 #xzf个人服务器的Ip地址，部署到哪台机器就用哪台机器的ip
+    instance-id: ${spring.cloud.client.ip-address}.${server.port}
 
 logging:
   file:
-    name: /gdbigdata/duplessksserver17003/gdbd-dkss-17003-log.txt
+    name: /gdbigdata/duplessksserver/gdbd-dkss-log.txt
   level:
     edu.jnu: info

@@ -2,6 +2,7 @@ edu\jnu\PO\TagFileInfoPO.class
 edu\jnu\service\OSSService.class
 edu\jnu\controller\StorageApi.class
 edu\jnu\VO\ProofIntegrityVO.class
+edu\jnu\config\Swagger3Config.class
 edu\jnu\config\OssConfig.class
 edu\jnu\VO\IntegerityProof.class
 edu\jnu\service\SepdpProofService.class
