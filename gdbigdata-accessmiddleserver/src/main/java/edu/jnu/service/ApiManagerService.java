@@ -58,10 +58,13 @@ public class ApiManagerService {
         }
     }
 
-    public boolean createUser(UserDto userDto) {
+    public String createUser(UserDto userDto) {
         JSONObject result = this.simplePost(userDto, addUserUrl);
-        int code = Integer.parseInt(result.get("code").toString());
-        return code == 200;
+        if ("200".equals(result.get("code"))) {
+            return result.get("data").toString();
+        } else {
+            return null;
+        }
     }
 
     private JSONObject simplePost(Object obj, String url) {

@@ -19,7 +19,6 @@ spring:
       maximum-pool-size: 5
   jpa:
     generate-ddl: true
-    show-sql: true
     database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
       ddl-auto: update

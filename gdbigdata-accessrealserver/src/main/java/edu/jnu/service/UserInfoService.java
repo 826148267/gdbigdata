@@ -147,7 +147,8 @@ public class UserInfoService {
         }
     }
 
-    public void createUser(UserInfo userInfo) {
-        userInfoDao.save(userInfo);
+    public int createUser(UserInfo userInfo) {
+        UserInfo result = userInfoDao.save(userInfo);
+        return result.getId();
     }
 }

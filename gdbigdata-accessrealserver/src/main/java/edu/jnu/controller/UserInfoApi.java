@@ -58,7 +58,7 @@ public class UserInfoApi {
         userInfo.setUserName(createUserDto.getUserName());
         userInfo.setUserAddress(createUserDto.getUserAddress());
         userInfo.setUserFileNums(createUserDto.getUserFileNums());
-        userInfoService.createUser(userInfo);
-        return new JsonResponse<>(ResponseEnum.SUCCESS);
+        int resultId = userInfoService.createUser(userInfo);
+        return new JsonResponse<>(ResponseEnum.SUCCESS, resultId);
     }
 }
