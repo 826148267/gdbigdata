@@ -59,10 +59,15 @@ public class UserService {
         );
 
         // 将user实例以POST的形式发送给到real server
-        boolean flag = apiManagerService.createUser(userDto);
-        if (flag) {
-            this.countUserInfoNum();
-            this.saveUserNameAndId(user.getUserName(), this.getNowRecordNum());
+        this.countUserInfoNum();
+        this.saveUserNameAndId(user.getUserName(), this.getNowRecordNum());
+
+
+
+
+        String recordId = apiManagerService.createUser(userDto);
+        if (recordId != null && String.valueOf(Integer.parseInt(recordId)-1).equals(this.getNowRecordNum())) {
+
             return true;
         }
         return false;

@@ -26,6 +26,7 @@
         <mysql.connector.version>8.0.27</mysql.connector.version>
         <alibaba.oss.version>3.14.0</alibaba.oss.version>
         <swagger.version>3.0.0</swagger.version>
+        <openfeign.version>2.2.6.RELEASE</openfeign.version>
     </properties>
 
     <dependencyManagement>
@@ -118,7 +119,12 @@
                 <artifactId>springfox-boot-starter</artifactId>
                 <version>${swagger.version}</version>
             </dependency>
-
+            <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-openfeign -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-openfeign</artifactId>
+                <version>${openfeign.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -133,6 +139,10 @@
         <module>gdbigdata-gateway-17001</module>
         <module>gdbigdata-dupless-csp-server</module>
         <module>gdbigdata-dupless-ks-server</module>
+        <module>gdbigdata-access-middle-server-v2</module>
+        <module>gdbigdata-access-real-server-v2</module>
+        <module>gdbigdate-user-auth</module>
+        <module>gdbiddate-ldcia-server-v2</module>
     </modules>
 
     <build>
