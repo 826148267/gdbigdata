@@ -2,6 +2,7 @@ package edu.jnu.controller;
 
 import edu.jnu.entity.*;
 import edu.jnu.service.UserInfoService;
+import edu.jnu.utils.SnowflakeIdUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * @author Guo zifan
@@ -23,14 +25,16 @@ public class UserInfoApi {
 
     @PostMapping(value = "/users")
     public ResponseEntity<String> createNewUserInformation(@Validated @RequestBody AddUserVO addUserVO) {
+        SnowflakeIdUtils snowFlake = new SnowflakeIdUtils(1, 1);
         UserInfo userInfo = UserInfo.builder()
+                .userId(snowFlake.nextId())
                 .userName(addUserVO.getUserName())
                 .userFileNums(addUserVO.getUserFileNums())
                 .userOrganization(addUserVO.getUserOrganization())
                 .userAddress(addUserVO.getUserAddress())
                 .build();
-        int resultId = userInfoService.createUser(userInfo);
-        return ResponseEntity.ok(String.valueOf(resultId));
+        String resultId = userInfoService.createUser(userInfo);
+        return ResponseEntity.ok(resultId);
     }
 
     /*
@@ -38,7 +42,7 @@ public class UserInfoApi {
      */
     @PostMapping(value = "/osu-operation-first-phase")
     public ResponseEntity<?> getR(@Validated @RequestBody OsuFirstPhaseVO osuFirstPhaseVO) {
-        ArrayList<Integer> accessSet = osuFirstPhaseVO.getAccessSet();
+        ArrayList<Long> accessSet = osuFirstPhaseVO.getAccessSet();
         ArrayList<CipherText> taos = osuFirstPhaseVO.getTaoVector();
         String targetColumn = osuFirstPhaseVO.getTargetColumn();
         CipherText R = userInfoService.selectionPhase(accessSet, taos, targetColumn);
@@ -53,11 +57,11 @@ public class UserInfoApi {
      */
     @PostMapping(value = "/osu-operation-second-phase")
     public ResponseEntity<?> updateTargetCipherTextSet(@Validated @RequestBody OsuSecondPhaseVO osuSecondPhaseVO) {
-        ArrayList<Integer> accessSet = osuSecondPhaseVO.getOsuFirstPhaseVO().getAccessSet();
+        ArrayList<Long> accessSet = osuSecondPhaseVO.getOsuFirstPhaseVO().getAccessSet();
         ArrayList<CipherText> taoVector = osuSecondPhaseVO.getOsuFirstPhaseVO().getTaoVector();
         String targetColumn = osuSecondPhaseVO.getOsuFirstPhaseVO().getTargetColumn();
         CipherText delta = osuSecondPhaseVO.getDelta();
-        HashMap<Integer, CipherText> indexAndTaoMap = new HashMap<>();
+        HashMap<Long, CipherText> indexAndTaoMap = new HashMap<>();
         for (int i = 0; i < accessSet.size(); i++) {
             indexAndTaoMap.put(accessSet.get(i), taoVector.get(i));
         }

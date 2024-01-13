@@ -29,7 +29,6 @@ public class UserApi {
     @PostMapping(value = "/{userName}")
     public ResponseEntity<String> addUser(@Validated @RequestBody AddUserVO addUserVO, @PathVariable("userName") String userName) {
         if (userService.isExist(userName)) {
-            log.info("用户名："+userName+"---试图重复创建用户资料，已拒绝创建");
             return ResponseEntity.accepted().body("用户名："+userName + "---试图重复创建用户资料");
         }
 
@@ -41,10 +40,8 @@ public class UserApi {
                 .build();
 
         if (userService.addUser(userDTO)) {
-            log.info("用户名："+userName+ "---成功创建新用户信息");
             return ResponseEntity.ok("用户名："+userName+ "---成功创建新用户信息");
         } else {
-            log.info("用户名："+userDTO.getUserName()+"---创建用户信息失败");
             return ResponseEntity.accepted().body("用户名："+userName+ "---创建用户信息失败");
         }
     }

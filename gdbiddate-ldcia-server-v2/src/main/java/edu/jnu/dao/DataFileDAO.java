@@ -18,6 +18,16 @@ import java.util.Optional;
  */
 
 public interface DataFileDAO extends JpaRepository<DataFilePO, Integer> {
+    @Transactional
+    @Modifying
+    @Query("update table_data_file t set t.userName = ?1 where t.fileId = ?2")
+    int updateUserNameByFileId(String userName, String fileId);
+    @Transactional
+    @Modifying
+    @Query("delete from table_data_file t where t.fileId = ?1")
+    int deleteByFileId(String fileId);
+    Optional<DataFilePO> findByFileAbstractAndFirstSaveFlag(String fileAbstract, Integer firstSaveFlag);
+    Optional<DataFilePO> findByTagFileId(String tagFileId);
     Optional<DataFilePO> findByFileId(String fileId);
     boolean existsByUserNameAndFileNameAndFileAbstractAndMimeType(String userName, String fileName, String fileAbstract, String mimeType);
 

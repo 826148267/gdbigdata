@@ -1,21 +1,7 @@
 package edu.jnu;
 
-import com.alibaba.fastjson.JSON;
-import edu.jnu.entity.AuditParams;
-import edu.jnu.entity.Challenge;
-import edu.jnu.entity.IntegrityProof;
-import edu.jnu.entity.User;
-import edu.jnu.utils.AuditTool;
-import it.unisa.dia.gas.jpbc.Element;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
 
 /**
  * Hello world!

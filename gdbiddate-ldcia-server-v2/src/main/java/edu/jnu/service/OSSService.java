@@ -4,6 +4,8 @@ import com.aliyun.oss.OSS;
 import com.aliyun.oss.model.GetObjectRequest;
 import com.aliyun.oss.model.OSSObject;
 import com.aliyun.oss.model.PutObjectRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Guo zifan
@@ -18,6 +22,7 @@ import java.io.InputStreamReader;
  * @date 2022年03月01日 19:10
  */
 @Service
+@Slf4j
 public class OSSService {
 
 //    /**
@@ -95,5 +100,23 @@ public class OSSService {
             content.close();
         }
         return sb.toString();
+    }
+
+
+    /**
+     * 按行读取对象内容，并以List<String>的形式返回
+     * @param objName 文件对象名
+     * @param bucketName bucket名
+     * @return List<String>
+     */
+    public List<String> getListInOssObject(String objName, String bucketName) {
+        OSSObject oo = oss.getObject(new GetObjectRequest(bucketName, objName));
+        try {
+            return IOUtils.readLines(oo.getObjectContent());
+        } catch (IOException e) {
+            log.error("OSS读取文件内容出错");
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 }

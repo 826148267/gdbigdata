@@ -22,7 +22,7 @@ import java.util.ArrayList;
 public class OsuFirstPhaseVO {
     @NotEmpty(message = "下标集合accessSet不能为空")
     @JSONField(name = "accessSet")
-    private ArrayList<Integer> accessSet;
+    private ArrayList<Long> accessSet;
     @NotEmpty(message = "向量taos不能为空")
     @JSONField(name = "taoVector")
     private ArrayList<CipherText> taoVector;

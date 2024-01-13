@@ -10,3 +10,7 @@ management:
 
 swagger:
   enable: true
+
+spring:
+  jpa:
+    showSql: false

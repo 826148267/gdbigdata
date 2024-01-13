@@ -1,5 +1,5 @@
-swagger:
-  enable: true
+#swagger:
+#  enable: true
 
 logging:
   level:
@@ -9,6 +9,6 @@ logging:
           descriptor:
             sql:
               BasicBinder: ERROR
-spring:
-  jpa:
-    showSql: false
+#spring:
+#  jpa:
+#    showSql: false

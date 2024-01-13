@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class TaoAndCdata {
-    private Integer id;
+    private Long userId;
     private CipherText tao;
     private CipherText cdata;
 }

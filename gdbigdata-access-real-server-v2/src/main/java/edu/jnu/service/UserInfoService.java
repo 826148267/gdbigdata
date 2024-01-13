@@ -25,9 +25,14 @@ public class UserInfoService {
     @Autowired
     private UserInfoDao userInfoDao;
 
-    public int createUser(UserInfo userInfo) {
-        UserInfo result = userInfoDao.save(userInfo);
-        return result.getId();
+    public String createUser(UserInfo userInfo) {
+        try {
+            UserInfo result = userInfoDao.save(userInfo);
+            return String.valueOf(result.getUserId());
+        } catch (Exception e) {
+            log.error("插入用户{}信息失败，原因是{}", userInfo.getUserName(), e.getMessage());
+            return null;
+        }
     }
 
 //    /**
@@ -96,7 +101,7 @@ public class UserInfoService {
      * @param targetColumn  数据库表中的目标字段的字段名
      * @return 返回值为R，是目标明文加密到s+2层的密文
      */
-    public CipherText selectionPhase(final ArrayList<Integer> accessSet,
+    public CipherText selectionPhase(final ArrayList<Long> accessSet,
                                      ArrayList<CipherText> taos,
                                      String targetColumn) {
         // 用于计算R的参数集合
@@ -105,7 +110,7 @@ public class UserInfoService {
         // 利用访问下标序列accessSet从数据库中索引出对应的数据块Ci集合selectResult
         CipherText[] selectResult = new CipherText[accessSet.size()];
         for (int i = 0; i < accessSet.size(); i++) {
-            Optional<UserInfo> optional = userInfoDao.findById(accessSet.get(i));
+            Optional<UserInfo> optional = userInfoDao.findByUserId(accessSet.get(i));
             if (optional.isPresent()) {
                 UserInfo userInfo = optional.get();
                 Field field;
@@ -161,7 +166,7 @@ public class UserInfoService {
      * @param targetColumn 数据库表中的目标字段的字段名
      * @param delta 利用delta、taos对所有数据块进行一系列计算能够将我们的指定的数据块更新成想要的值
      */
-    public void updatePhase(HashMap<Integer, CipherText> indexAndTaoMap,
+    public void updatePhase(HashMap<Long, CipherText> indexAndTaoMap,
                             String targetColumn,
                             CipherText delta) {
 //        // 利用访问下标序列accessSet从数据库中索引出对应的数据块Ci集合
@@ -213,10 +218,10 @@ public class UserInfoService {
         indexAndTaoMap.entrySet().stream()
                 .parallel()
                 // 将hashmap转化为TaoAndCdata流
-                .map(entry -> TaoAndCdata.builder().id(entry.getKey()).tao(entry.getValue()).cdata(null).build())
+                .map(entry -> TaoAndCdata.builder().userId(entry.getKey()).tao(entry.getValue()).cdata(null).build())
                 // TaoAndCdata流依次进行处理
                 .forEach(taoAndCdata -> {
-                    Optional<UserInfo> userInfoOptional = userInfoDao.findById(taoAndCdata.getId());
+                    Optional<UserInfo> userInfoOptional = userInfoDao.findByUserId(taoAndCdata.getUserId());
                     if (userInfoOptional.isPresent()) {
                         Field field;
                         String targetColumnValue;

@@ -5,10 +5,10 @@ spring:
     port: 30006
     password: gdbd.access.redis
 
-swagger:
-  enable: true
+#swagger:
+#  enable: true
 
 access:
   real:
     server:
-      url: http://localhost:10001
+      url: http://10.152.38.17:10001

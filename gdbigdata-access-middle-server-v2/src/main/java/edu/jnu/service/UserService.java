@@ -5,7 +5,6 @@ import edu.jnu.entity.*;
 import edu.jnu.service.thirdpart.UserInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -31,9 +30,6 @@ public class UserService {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    @Autowired(required = false)
-    private ThreadPoolTaskExecutor applicationTaskExecutor;
-
     @Autowired
     private OsuService osuService;
 
@@ -45,9 +41,9 @@ public class UserService {
         redisTemplate.opsForValue().increment("userInfoRecordNum");
     }
 
-    public void saveUserNameAndId(Optional<String> userName, Optional<String> nowRecordNum) {
-        if (userName.isPresent() && nowRecordNum.isPresent()) {
-            redisTemplate.opsForValue().set(userName.get(), nowRecordNum.get());
+    public void saveUserNameAndId(Optional<String> userName, String userId) {
+        if (userName.isPresent()) {
+            redisTemplate.opsForValue().set(userName.get(), userId);
             redisTemplate.persist(userName.get());
         }
     }
@@ -56,7 +52,7 @@ public class UserService {
         Optional<String> userName = Optional.ofNullable(userDto.getUserName());
         try {
             if (userName.isPresent()) {
-                userDto.encryptAllFields2SPlus2(OsuProtocolParams.PK, OsuProtocolParams.s, applicationTaskExecutor);
+                userDto.encryptAllFields2SPlus2(OsuProtocolParams.PK, OsuProtocolParams.s);
             }
         } catch (ExecutionException | InterruptedException e) {
             log.error("用户"+userName + "的信息加密失败，存储失败");
@@ -69,7 +65,7 @@ public class UserService {
         Predicate<String> sqlOperatorIsSuccess = Objects::nonNull;
         // 如果用户id非空，则向redis中插入数据
         if (recordId.filter(sqlOperatorIsSuccess).isPresent()) {
-            this.saveUserNameAndId(userName, recordId);
+            this.saveUserNameAndId(userName, recordId.get());
             this.countUserInfoNum();
             return true;
         } else {
@@ -79,7 +75,7 @@ public class UserService {
 
     @Cacheable("userFileNumsByUserName")
     public String getUserFileNums(String userName) {
-        int id = this.getIdByUserName(userName);
+        String id = this.getUserIdByUserName(userName);
         String recordNum = this.getNowRecordNum();
         OsuParam osuParam = new OsuParam(id, "userFileNums", recordNum);
         return osuService.getOneFieldOfTable(osuParam);
@@ -87,7 +83,7 @@ public class UserService {
 
     @Cacheable("userAddressByUserName")
     public String getUserAddress(String userName) {
-        int id = this.getIdByUserName(userName);
+        String id = this.getUserIdByUserName(userName);
         String recordNum = this.getNowRecordNum();
         OsuParam osuParam = new OsuParam(id, "userAddress", recordNum);
         return osuService.getOneFieldOfTable(osuParam);
@@ -95,20 +91,20 @@ public class UserService {
 
     @Cacheable("userOrganizationByUserName")
     public String getUserOrganization(String userName) {
-        int id = this.getIdByUserName(userName);
+        String id = this.getUserIdByUserName(userName);
         String recordNum = this.getNowRecordNum();
         OsuParam osuParam = new OsuParam(id, "userOrganization", recordNum);
         return osuService.getOneFieldOfTable(osuParam);
     }
 
     public UserVO getUser(String userName) {
-        int id = this.getIdByUserName(userName);
+        String userId = this.getUserIdByUserName(userName);
         CompletableFuture<String> userOrganizationFuture = CompletableFuture.supplyAsync(() -> this.getUserOrganization(userName));
         CompletableFuture<String> userAddressFuture = CompletableFuture.supplyAsync(() -> this.getUserAddress(userName));
         CompletableFuture<String> userFileNumsFuture = CompletableFuture.supplyAsync(() -> this.getUserFileNums(userName));
         CompletableFuture.allOf(userOrganizationFuture, userAddressFuture, userFileNumsFuture);
         return UserVO.builder()
-                .userId(String.valueOf(id))
+                .userId(userId)
                 .userName(userName)
                 .userAddress(userAddressFuture.join())
                 .userOrganization(userOrganizationFuture.join())
@@ -116,33 +112,30 @@ public class UserService {
                 .build();
     }
 
-    public int getIdByUserName(String userName) {
-        return Integer.parseInt(Objects.requireNonNull(redisTemplate.opsForValue().get(userName)).toString());
+    public String getUserIdByUserName(String userName) {
+        return Objects.requireNonNull(redisTemplate.opsForValue().get(userName)).toString();
     }
 
     public String getNowRecordNum() {
         return Objects.requireNonNull(redisTemplate.opsForValue().get("userInfoRecordNum")).toString();
     }
 
-    @CachePut(value = "userOrganizationByUserName", key = "#user.userName")
     public String updateUserOrganization(UpdateOrganizationDTO user) {
-        int id = this.getIdByUserName(user.getUserName());
+        String id = this.getUserIdByUserName(user.getUserName());
         String recordNum = this.getNowRecordNum();
         OsuParam osuParam = new OsuParam(id, "userOrganization", recordNum);
         return osuService.setOneFieldOfTable(osuParam, user.getUserOrganization());
     }
 
-    @CachePut(value = "userAddressByUserName", key = "#user.userName")
     public String updateUserAddress(UpdateAddressDTO user) {
-        int id = this.getIdByUserName(user.getUserName());
+        String id = this.getUserIdByUserName(user.getUserName());
         String recordNum = this.getNowRecordNum();
         OsuParam osuParam = new OsuParam(id, "userAddress", recordNum);
         return osuService.setOneFieldOfTable(osuParam, user.getUserAddress());
     }
 
-    @CachePut(value = "userFileNumsByUserName", key = "#user.userName")
     public String updateUserFileNums(UpdateFileNumsDTO user) {
-        int id = this.getIdByUserName(user.getUserName());
+        String id = this.getUserIdByUserName(user.getUserName());
         String recordNum = this.getNowRecordNum();
         OsuParam osuParam = new OsuParam(id, "userFileNums", recordNum);
         return osuService.setOneFieldOfTable(osuParam, user.getUserFileNums());
@@ -161,16 +154,21 @@ public class UserService {
                 .userName(user.getUserName())
                 .userFileNums(user.getUserFileNums())
                 .build();
-        CompletableFuture<String> userOrganizationFuture = CompletableFuture.supplyAsync(() -> this.updateUserOrganization(updateOrganizationDTO));
-        CompletableFuture<String> userAddressFuture = CompletableFuture.supplyAsync(() -> this.updateUserAddress(updateAddressDTO));
-        CompletableFuture<String> userFileNumsFuture = CompletableFuture.supplyAsync(() -> this.updateUserFileNums(updateFileNumsDTO));
-        CompletableFuture.allOf(userOrganizationFuture, userAddressFuture, userFileNumsFuture);
+//        CompletableFuture<String> userOrganizationFuture = CompletableFuture.supplyAsync(() -> this.updateUserOrganization(updateOrganizationDTO));
+//        CompletableFuture<String> userAddressFuture = CompletableFuture.supplyAsync(() -> this.updateUserAddress(updateAddressDTO));
+//        CompletableFuture<String> userFileNumsFuture = CompletableFuture.supplyAsync(() -> this.updateUserFileNums(updateFileNumsDTO));
+//        CompletableFuture.allOf(userOrganizationFuture, userAddressFuture, userFileNumsFuture);
+//        return UserDTO.builder()
+//                .userName(user.getUserName())
+//                .userAddress(userAddressFuture.join())
+//                .userOrganization(userOrganizationFuture.join())
+//                .userFileNums(userFileNumsFuture.join())
+//                .build();
         return UserDTO.builder()
-                .userName(String.valueOf(this.getIdByUserName(user.getUserName())))
                 .userName(user.getUserName())
-                .userAddress(userAddressFuture.join())
-                .userOrganization(userOrganizationFuture.join())
-                .userFileNums(userFileNumsFuture.join())
+                .userAddress(this.updateUserOrganization(updateOrganizationDTO))
+                .userOrganization(this.updateUserAddress(updateAddressDTO))
+                .userFileNums(this.updateUserFileNums(updateFileNumsDTO))
                 .build();
     }
 }

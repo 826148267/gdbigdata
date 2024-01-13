@@ -40,7 +40,7 @@ public class DataFilePO {
     private String fileAbstract;
 
     @Column
-    private String keyFileId;
+    private String dedupKeyCipher;
 
     @Column
     private String tagFileId;

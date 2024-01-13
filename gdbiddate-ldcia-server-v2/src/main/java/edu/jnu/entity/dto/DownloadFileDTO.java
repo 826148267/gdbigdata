@@ -17,6 +17,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class DownloadFileDTO {
-    private String mimeType;
+    private String dedupKeyCipher;
     private String data;
 }

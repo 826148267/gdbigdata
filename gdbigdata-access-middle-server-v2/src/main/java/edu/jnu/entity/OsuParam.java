@@ -7,9 +7,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Guo zifan
@@ -21,10 +24,11 @@ import java.util.Arrays;
 @AllArgsConstructor
 @Builder
 public class OsuParam {
-    private int id;
+    private String userId;
     private String targetColumn;
     private String tableRecordNum;
-    public GetUserInfoPhase1DTO createDto1ForSingleField() {
+
+    public GetUserInfoPhase1DTO createDto1ForSingleField(RedisTemplate redisTemplate) {
         // 获取当前表中的记录数
         int recordNum = Integer.parseInt(tableRecordNum);
 
@@ -37,22 +41,35 @@ public class OsuParam {
             return null;
         }
 
-        int[] idSet = Tools.createRandomIndexSet(randomSequenceSize, recordNum+1, 1);
-        int i = Tools.getRandom(randomSequenceSize, 0);
-        idSet[i] = id;
+        // 获取长度为randomSequenceSize的随机选择的userId的List
+        ArrayList<String> userIdSet = new ArrayList<>();
+        for (int i = 1; i < randomSequenceSize; i++) {
+            String randomKey;
+            do {
+                randomKey = (String) redisTemplate.randomKey();
+            } while ("userInfoRecordNum".equals(randomKey));
+
+            String userId = null;
+            if (randomKey != null) {
+                userId = (String) redisTemplate.opsForValue().get(randomKey);
+            }
+            if (!userIdSet.contains(userId) && !userId.equals(this.userId)) {
+                userIdSet.add(userId);
+            } else {
+                -- i;
+            }
+        }
+        // 随机选择一个位置，将目标位置的userId置为目标userId
+        int targetIndex = Tools.getRandom(randomSequenceSize, 0);
+        userIdSet.add(targetIndex, userId);
 
         CipherText[] taos = Action.createTaoVector(OsuProtocolParams.PK,
-                OsuProtocolParams.s, randomSequenceSize, i);
+                OsuProtocolParams.s, randomSequenceSize, targetIndex);
 
-        // 将数组idSet转换为ArrayList<Integer>
-        ArrayList<Integer> accessSet = new ArrayList<>();
-        for (int k : idSet) {
-            accessSet.add(k);
-        }
         // 将数组taos转换为ArrayList<CipherText>
         ArrayList<CipherText> taoVector = new ArrayList<>(Arrays.asList(taos));
 
-        return new GetUserInfoPhase1DTO(taoVector, targetColumn, accessSet);
+        return new GetUserInfoPhase1DTO(taoVector, targetColumn, userIdSet);
     }
 
     public GetUserInfoPhase2DTO createDto2(GetUserInfoPhase1DTO dto1, CipherText v, String freshValue) {
@@ -61,7 +78,7 @@ public class OsuParam {
     }
 
     public boolean validParams() {
-        if (this.id == 0) {
+        if (this.userId == null) {
             return false;
         }
         if (this.tableRecordNum == null) {

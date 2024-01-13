@@ -10,9 +10,11 @@ import edu.jnu.utils.Action;
 import edu.jnu.utils.Tools;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -26,6 +28,9 @@ public class OsuService {
 
     @Autowired
     private UserInfoService userInfoService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     public String getOneFieldOfTable(OsuParam osuParam) {
         HashMap<String, Object> result = this.selectionPhase(osuParam);
@@ -74,7 +79,7 @@ public class OsuService {
         }
 
         // 创建selection阶段数据传输对象
-        GetUserInfoPhase1DTO dto1 = osuParam.createDto1ForSingleField();
+        GetUserInfoPhase1DTO dto1 = osuParam.createDto1ForSingleField(redisTemplate);
 
         // 调用real server接口得到R
         CipherText R = userInfoService.osuGetR(dto1);

@@ -9,4 +9,4 @@ spring:
 access:
   middle:
     server:
-      url: http://localhost:10002
+      url: http://10.152.38.17:10002

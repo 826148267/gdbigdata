@@ -1,7 +1,5 @@
 package edu.jnu.entity.dto;
 
-import edu.jnu.entity.AuditParams;
-import edu.jnu.entity.TransParams;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,4 +21,5 @@ public class UploadDataFileDTO {
     private String userName;
     private String fileName;
     private String mimeType;
+    private String dedupKeyCipher;
 }

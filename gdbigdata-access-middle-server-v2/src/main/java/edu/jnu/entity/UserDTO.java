@@ -35,7 +35,7 @@ public class UserDTO {
      * 加密全部字段到s+2层。
      * @return 加密成功返回true，否则返回false
      */
-    public void encryptAllFields2SPlus2(PublicKey pk, int sValue, ThreadPoolTaskExecutor executor) throws ExecutionException, InterruptedException {
+    public void encryptAllFields2SPlus2(PublicKey pk, int sValue) throws ExecutionException, InterruptedException {
         this.userName = Tools.encode(this.getUserName());
         this.userAddress = Tools.encode(this.getUserAddress());
         this.userOrganization = Tools.encode(this.getUserOrganization());
@@ -50,7 +50,7 @@ public class UserDTO {
                 throw new RuntimeException(e);
             }
             this.userName = cUserName.getCp().toString();
-        }, executor);
+        });
 
         CompletableFuture<Void> userOrganizationFuture = CompletableFuture.runAsync(() -> {
             CipherText cUserOrganization = null;
@@ -60,7 +60,7 @@ public class UserDTO {
                 throw new RuntimeException(e);
             }
             this.userOrganization = cUserOrganization.getCp().toString();
-        }, executor);
+        });
 
         CompletableFuture<Void> userAddressFuture = CompletableFuture.runAsync(() -> {
             CipherText cUserAddress = null;
@@ -70,7 +70,7 @@ public class UserDTO {
                 throw new RuntimeException(e);
             }
             this.userAddress = cUserAddress.getCp().toString();
-        }, executor);
+        });
 
         CompletableFuture<Void> userFileNumsFuture = CompletableFuture.runAsync(() -> {
             CipherText cUserFileNums = null;
@@ -80,7 +80,7 @@ public class UserDTO {
                 throw new RuntimeException(e);
             }
             this.userFileNums = cUserFileNums.getCp().toString();
-        }, executor);
+        });
 
         CompletableFuture.allOf(userNameFuture, userOrganizationFuture, userAddressFuture, userFileNumsFuture).get();
     }

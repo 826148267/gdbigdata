@@ -1,26 +1,25 @@
 package edu.jnu.service;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.aliyun.oss.model.OSSObject;
 import edu.jnu.dao.DataFileDAO;
+import edu.jnu.entity.AuditParams;
+import edu.jnu.entity.Challenge;
 import edu.jnu.entity.FileListDTO;
 import edu.jnu.entity.TransParams;
+import edu.jnu.entity.optimization.IndexAndSign;
 import edu.jnu.entity.po.DataFilePO;
+import edu.jnu.utils.AuditTool;
+import it.unisa.dia.gas.jpbc.Element;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.math.BigInteger;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @作者: 郭梓繁
@@ -47,9 +46,10 @@ public class FileService {
         return false;
     }
 
-    public TransParams addDataFileInfo(String userName, String fileName, String mimeType, String fileAbstract) {
+    public TransParams addDataFileInfo(String userName, String fileName, String mimeType, String fileAbstract, String dedupKeyCipher) {
         // 获取第一个存储该文件的用户
         Optional<DataFilePO> firstSaver = dataFileDAO.findFirstSaver(fileAbstract, mimeType, 1);
+
         String thisFileId = UUID.randomUUID().toString();
         DataFilePO dataFilePO = DataFilePO.builder()
                                             .fileId(thisFileId)
@@ -59,6 +59,7 @@ public class FileService {
                                             .fileAbstract(fileAbstract)
                                             .firstSaveFlag(0)
                                             .fileActualId(firstSaver.get().getFileId())
+                                            .dedupKeyCipher(dedupKeyCipher)
                                             .build();
         dataFileDAO.save(dataFilePO);
         String string = null;
@@ -91,7 +92,7 @@ public class FileService {
         return fileId;
     }
 
-    public void saveDataFileInfo(String fileId, String userName, String fileName, String mimeType, String fileAbstract) {
+    public void saveDataFileInfo(String fileId, String userName, String fileName, String mimeType, String fileAbstract, String dedupKeyCipher) {
         // 获取第一个存储该文件的用户
         DataFilePO dataFilePO = DataFilePO.builder()
                 .fileId(fileId)
@@ -100,6 +101,7 @@ public class FileService {
                 .mimeType(mimeType)
                 .fileAbstract(fileAbstract)
                 .fileActualId(fileId)
+                .dedupKeyCipher(dedupKeyCipher)
                 .firstSaveFlag(1)
                 .build();
         dataFileDAO.save(dataFilePO);
@@ -251,8 +253,8 @@ public class FileService {
 
 
     /**
-     * 通过文件id获取签名文件的id
-     * @param fileId 文件id
+     * 通过文件的逻辑id获取签名文件的id
+     * @param fileId 文件逻辑id
      * @return  签名文件的id
      */
     public String getTagFileId(String fileId) {
@@ -268,5 +270,151 @@ public class FileService {
     public String getDataFileId(String fileId) {
         Optional<DataFilePO> filePO = dataFileDAO.findByFileId(fileId);
         return filePO.map(DataFilePO::getFileActualId).orElse(null);
+    }
+
+    /**
+     * 读取出首位上传的签名文件
+     * 依次进行转化
+     * 然后重新写入新文件中
+     * @param firstSaverSignFileId 首位上传的签名文件的id
+     * @return 新用户标签文件的id
+     */
+    public String transSign(String firstSaverSignFileId, TransParams transParams) {
+        // 从对象存储中获取出签名文件的字符串形式，并存储成List<Element>, {σ1,...,σn}
+        List<Element> signElements = getSignElementListByFileId(firstSaverSignFileId);
+        // 从对象存储中获取出数据文件的字符串形式，并存储成List<String>， {H2(m1),...,H2(mn)}
+        Optional<DataFilePO> filePO = dataFileDAO.findByTagFileId(firstSaverSignFileId);
+        String dataFileId = filePO.map(DataFilePO::getFileId).orElse(null);
+        List<Element> dataElements = getDataElementListByFileId(dataFileId);
+        // 收集签名结果
+        StringBuilder stringBuilder = new StringBuilder();
+
+//        // 将老签名转化成新的签名
+//        String fileAbstract = filePO.map(DataFilePO::getFileAbstract).orElse(null);
+//        for (int i = 0; i < signElements.size(); i++) {
+//            // σ' = σ * H1(H||i)^(r'-r) * (u^(mi))^(aux_) * V^(mi)
+//            Element newElement = signElements.get(i).duplicate()
+//                    .mul(
+//                            AuditTool.hashOne(fileAbstract+i)
+//                                        .powZn(AuditTool.str2ZpElement(transParams.getR())
+//                    )
+//                    .mul(
+//                            AuditTool.u.duplicate()
+//                                    .powZn(dataElements.get(i))
+//                                    .powZn(AuditTool.str2ZpElement(transParams.getAux()))
+//                    )
+//                    .mul(
+//                            AuditTool.str2G1Element(transParams.getV())
+//                                    .powZn(dataElements.get(i))
+//                    ));
+//            stringBuilder.append(Base64.getEncoder().encodeToString(AuditTool.g1Element2Str(newElement).getBytes())).append("\n");
+//        }
+//        String string = stringBuilder.delete(stringBuilder.length() - 1, stringBuilder.length()).toString();
+        /***********************************************************多线程优化版本*****************************************************************/
+        String fileAbstract = filePO.map(DataFilePO::getFileAbstract).orElse(null);
+        List<IndexAndSign> optimizeList = new ArrayList<>();
+        for (int i = 0; i < signElements.size(); i++) {
+            IndexAndSign indexAndSign = new IndexAndSign(i, signElements.get(i));
+            optimizeList.add(indexAndSign);
+        }
+        List<String> list = optimizeList.stream()
+                .parallel()
+                .map(indexAndSign -> {
+                    Element newElement = indexAndSign.getSign().duplicate()
+                            .mul(
+                                    AuditTool.hashOne(fileAbstract + indexAndSign.getIndex())
+                                            .powZn(AuditTool.str2ZpElement(transParams.getR())
+                                            )
+                                            .mul(
+                                                    AuditTool.u.duplicate()
+                                                            .powZn(dataElements.get(indexAndSign.getIndex()))
+                                                            .powZn(AuditTool.str2ZpElement(transParams.getAux()))
+                                            )
+                                            .mul(
+                                                    AuditTool.str2G1Element(transParams.getV())
+                                                            .powZn(dataElements.get(indexAndSign.getIndex()))
+                                            ));
+                    return Base64.getEncoder().encodeToString(AuditTool.g1Element2Str(newElement).getBytes());
+                })
+                .toList();
+        list.forEach(s -> stringBuilder.append(s).append("\n"));
+        String string = stringBuilder.delete(stringBuilder.length() - 1, stringBuilder.length()).toString();
+        /****************************************************************************************************************************************/
+        String signFileId = UUID.randomUUID().toString();
+        ossService.uploadObj2OSS(signFileId, "gdbigdata", IOUtils.toInputStream(string));
+        return signFileId;
+    }
+
+    private List<Element> getDataElementListByFileId(String fileId) {
+        List<String> stringList = ossService.getListInOssObject(fileId, "gdbigdata");
+        return stringList.stream()
+                .parallel()
+                .map(AuditTool::hashTwo)
+                .toList();
+    }
+
+    /**
+     * 通过签名文件的文件id读取出List<Element>形式的签名
+     * @param firstSaverSignFileId 首位上传的签名文件的id
+     * @return List<Element>形式的签名
+     */
+    private List<Element> getSignElementListByFileId(String firstSaverSignFileId) {
+        // List<String>形式读取签名文件的文件内容
+        List<String> stringList = ossService.getListInOssObject(firstSaverSignFileId, "gdbigdata");
+        // 对List<String>中的元素进行base64解码，然后转化为字符串，再将字符串转化为Element
+        return stringList.stream()
+                .parallel()
+                .map(s -> AuditTool.str2G1Element(new String(Base64.getDecoder().decode(s))))
+                .toList();
+    }
+
+    public String getDedupKeyCipherByFileId(String fileId) {
+        Optional<DataFilePO> filePO = dataFileDAO.findByFileId(fileId);
+        return filePO.map(DataFilePO::getDedupKeyCipher).orElse(null);
+    }
+
+    public Integer getFileLines(String fileAbstract) {
+        Optional<DataFilePO> dataFilePO = dataFileDAO.findByFileAbstractAndFirstSaveFlag(fileAbstract, 1);
+        if (dataFilePO.isEmpty()) {
+            return 0;
+        }
+        String auditParamsFileId = dataFilePO.get().getAuditParamsFileId();
+        String string = null;
+        try {
+            string = ossService.getStringInOssObject(auditParamsFileId, "gdbigdata");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        AuditParams auditParams = JSONObject.parseObject(string, AuditParams.class);
+        return auditParams.getN();
+    }
+
+    public boolean checkPoWProof(Element proof, List<Challenge> challenges, String fileAbstract) {
+        Optional<DataFilePO> filePO = dataFileDAO.findByFileAbstractAndFirstSaveFlag(fileAbstract, 1);
+        String fileActualId = filePO.get().getFileActualId();
+        OSSObject ossObject = ossService.getObj(fileActualId, "gdbigdata");
+        ArrayList<Integer> indexList = new ArrayList<>(challenges.stream()
+                .map(Challenge::getIndex)
+                .toList());
+        ArrayList<String> dataList = this.getListFromPointedLinesArrayInInputStream(ossObject.getObjectContent(), indexList);
+        Element reduced = AuditTool.getZpZero();
+        for (int i = 0; i < challenges.size(); i++) {
+            reduced.add(AuditTool.hashTwo(dataList.get(i)).mul(AuditTool.hashTwo(String.valueOf(challenges.get(i).getRandom()))));
+        }
+        return proof.isEqual(reduced);
+    }
+
+    /**
+     * 根据文件id删除文件在数据库中的记录
+     * @param fileId 文件id
+     */
+    public int deleteFile(String fileId) {
+        Optional<DataFilePO> filePOOptional = dataFileDAO.findByFileId(fileId);
+        if (filePOOptional.isPresent() && filePOOptional.get().getFirstSaveFlag() == 1) {
+            return dataFileDAO.updateUserNameByFileId("null", filePOOptional.get().getFileId());
+        }
+        ossService.deleteObj(filePOOptional.get().getTransParamsFileId(), "gdbigdata");
+        ossService.deleteObj(filePOOptional.get().getTagFileId(), "gdbigdata");
+        return dataFileDAO.deleteByFileId(fileId);
     }
 }

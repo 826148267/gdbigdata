@@ -3,6 +3,7 @@ package edu.jnu;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
  * @作者: 郭梓繁
@@ -13,6 +14,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  */
 @EnableFeignClients
 @SpringBootApplication
+@EnableAsync
 public class App {
     public static void main(String[] args) {
         SpringApplication.run(App.class, args);

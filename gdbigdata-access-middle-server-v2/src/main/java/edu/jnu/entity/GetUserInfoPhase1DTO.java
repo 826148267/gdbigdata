@@ -24,5 +24,5 @@ public class GetUserInfoPhase1DTO {
     @JsonProperty("targetColumn")
     private String targetColumn;
     @JsonProperty("accessSet")
-    private ArrayList<Integer> accessSet;
+    private ArrayList<String> accessSet;
 }
