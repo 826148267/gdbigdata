@@ -7,9 +7,9 @@ logging:
 spring:
   redis:
     database: 0
-    host: 192.168.58.2
+    host: 
     port: 30006
-    password: gdbd.access.redis
+    password: 
 
 eureka:
   client:
