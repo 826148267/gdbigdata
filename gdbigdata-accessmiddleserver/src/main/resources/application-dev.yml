@@ -3,7 +3,7 @@ spring:
     database: 0
     host: 10.152.38.17
     port: 30006
-    password: gdbd.access.redis
+    password: 
 
 swagger:
   enable: true
