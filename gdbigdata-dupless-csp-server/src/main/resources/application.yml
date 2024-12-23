@@ -5,8 +5,8 @@ spring:
     active: prod
   datasource:
     url: jdbc:mysql://gz-cynosdbmysql-grp-46q2jczh.sql.tencentcdb.com:25953/gdbigdata?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: root
-    password: n.Tw3f6EgB4dHRa
+    username: 
+    password: 
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
@@ -36,5 +36,5 @@ server:
 aliyun:
   oss:
     endpoint: oss-cn-shanghai.aliyuncs.com
-    access-key-id: LTAI5tP8yVCfJBcjoWbJyFYg
-    access-key-secret: u3nn8uGU0v7DglUF81vZTfmcsnJppv
+    access-key-id: 
+    access-key-secret: 
